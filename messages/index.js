@@ -5,6 +5,7 @@ For a complete walkthrough of creating this type of bot see the article at
 https://aka.ms/abs-node-luis
 -----------------------------------------------------------------------------*/
 "use strict";
+
 var builder = require("botbuilder");
 var botbuilder_azure = require("botbuilder-azure");
 var path = require('path');
@@ -43,6 +44,9 @@ var recognizer = new builder.LuisRecognizer(LuisModelUrl);
 var intents = new builder.IntentDialog({ recognizers: [recognizer] })
 .matches('Greeting', (session) => {
     session.send('You reached Greeting intent, you said \'%s\'.', session.message.text);
+})
+.matches('Contact', (session) => {
+    session.send('You reached Contact intent, you said \'%s\'.', session.message.text);
 })
 .matches('Help', (session) => {
     session.send('You reached Help intent, you said \'%s\'.', session.message.text);
