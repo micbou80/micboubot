@@ -6,71 +6,279 @@ https://aka.ms/abs-node-luis
 -----------------------------------------------------------------------------*/
 "use strict";
 
-var builder = require("botbuilder");
-var botbuilder_azure = require("botbuilder-azure");
-var path = require('path');
+const builder = require("botbuilder");
+const botbuilder_azure = require("botbuilder-azure");
+const builder_cognitiveservices = require("botbuilder-cognitiveservices")
+const path = require('path');
 
-var useEmulator = (process.env.NODE_ENV == 'development');
+// Configure Application Insights
+if (process.env.APPINSIGHTS_INSTRUMENTATIONKEY) {
+    const AppInsights = require('applicationinsights');
+    AppInsights.setup().start();
+}
 
-var connector = useEmulator ? new builder.ChatConnector() : new botbuilder_azure.BotServiceConnector({
+// Check if production or emulator
+const is_development = (process.env.NODE_ENV == 'development');
+
+// Configure ChatConnector
+const connector = is_development ? new builder.ChatConnector() : new botbuilder_azure.BotServiceConnector({
     appId: process.env['MicrosoftAppId'],
     appPassword: process.env['MicrosoftAppPassword'],
     openIdMetadata: process.env['BotOpenIdMetadata']
 });
 
+const bot = new builder.UniversalBot(connector);
+
+bot.set('localizerSettings', {
+    botLocalePath: __dirname + "\locale",
+    defaultLocale: 'nl'
+});
+
+// bot.localePath(path.join(__dirname, './locale'));
 /*----------------------------------------------------------------------------------------
 * Bot Storage: This is a great spot to register the private state storage for your bot. 
 * We provide adapters for Azure Table, CosmosDb, SQL Azure, or you can implement your own!
 * For samples and documentation, see: https://github.com/Microsoft/BotBuilder-Azure
 * ---------------------------------------------------------------------------------------- */
+if (!is_development) {
+    const tableName = 'botdata';
+    const azureTableClient = new botbuilder_azure.AzureTableClient(tableName, process.env['AzureWebJobsStorage']);
+    const tableStorage = new botbuilder_azure.AzureBotStorage({ gzipData: false }, azureTableClient);
 
-var tableName = 'botdata';
-var azureTableClient = new botbuilder_azure.AzureTableClient(tableName, process.env['AzureWebJobsStorage']);
-var tableStorage = new botbuilder_azure.AzureBotStorage({ gzipData: false }, azureTableClient);
+    bot.set('storage', tableStorage);
+}
 
-var bot = new builder.UniversalBot(connector);
-bot.localePath(path.join(__dirname, './locale'));
-bot.set('storage', tableStorage);
+if (is_development) {
+    const restify = require('restify');
+    const server = restify.createServer();
 
-// Make sure you add code to validate these fields
-var luisAppId = process.env.LuisAppId;
-var luisAPIKey = process.env.LuisAPIKey;
-var luisAPIHostName = process.env.LuisAPIHostName || 'westus.api.cognitive.microsoft.com';
+    // Setup endpoint for incoming messages which will be passed to the bot's ChatConnector.
+    server.post('/api/messages', connector.listen());
 
-const LuisModelUrl = 'https://' + luisAPIHostName + '/luis/v1/application?id=' + luisAppId + '&subscription-key=' + luisAPIKey;
-
-// Main dialog with LUIS
-var recognizer = new builder.LuisRecognizer(LuisModelUrl);
-var intents = new builder.IntentDialog({ recognizers: [recognizer] })
-.matches('Greeting', (session) => {
-    session.send('You reached Greeting intent, you said \'%s\'.', session.message.text);
-})
-.matches('Contact', (session) => {
-    session.send('You reached Contact intent, you said \'%s\'.', session.message.text);
-})
-.matches('Help', (session) => {
-    session.send('You reached Help intent, you said \'%s\'.', session.message.text);
-})
-.matches('Cancel', (session) => {
-    session.send('You reached Cancel intent, you said \'%s\'.', session.message.text);
-})
-/*
-.matches('<yourIntent>')... See details at http://docs.botframework.com/builder/node/guides/understanding-natural-language/
-*/
-.onDefault((session) => {
-    session.send('Sorry, I did not understand \'%s\'.', session.message.text);
-});
-
-bot.dialog('/', intents);    
-
-if (useEmulator) {
-    var restify = require('restify');
-    var server = restify.createServer();
-    server.listen(3978, function() {
-        console.log('test bot endpont at http://localhost:3978/api/messages');
+    // Start server
+    server.listen(process.env.PORT || 3978, () => {
+        console.log(`Bot Framework listening to ${server.url}`);
     });
-    server.post('/api/messages', connector.listen());    
+
+    server.post('/api/messages', connector.listen());
 } else {
     module.exports = connector.listen();
 }
 
+//=========================================================
+// Bots Middleware
+//=========================================================
+
+// Anytime the major version is incremented any existing conversations will be restarted.
+bot.use(builder.Middleware.dialogVersion({ version: 1.0, resetCommand: /^reset/i }));
+bot.use(builder.Middleware.sendTyping());
+
+//=========================================================
+// Bots Recognizers
+//=========================================================
+
+// LUIS Recognizer
+const luisAppId = process.env.LuisAppId;
+const luisAPIKey = process.env.LuisAPIKey;
+const luisAPIHostName = process.env.LuisAPIHostName || 'westeurope.api.cognitive.microsoft.com';
+const LuisModelUrl = 'https://' + luisAPIHostName + '/luis/v2.0/apps/' + luisAppId + '?subscription-key=' + luisAPIKey;
+
+const luis_recognizer = new builder.LuisRecognizer(LuisModelUrl);
+bot.recognizer(luis_recognizer);
+
+// QnAMakerRecognizer
+const qna_recognizer = new builder_cognitiveservices.QnAMakerRecognizer({
+    knowledgeBaseId: process.env.QnAKnowledgebaseId,
+    subscriptionKey: process.env.QnASubscriptionKey
+});
+
+bot.recognizer(qna_recognizer);
+
+// RegExpRecognizer
+// bot.recognizer(new builder.RegExpRecognizer( "CancelIntent", { en_us: /^(cancel|nevermind)/i, ja_jp: /^(キャンセル)/ }));
+
+//=========================================================
+// Bots Dialogs
+//=========================================================
+
+// Start default dialog on first open
+bot.on('conversationUpdate', (message) => {
+    if (message.membersAdded) {
+        message.membersAdded.forEach(function (identity) {
+            if (identity.id === message.address.bot.id) {
+
+                // Bot is joining conversation (page loaded)
+                bot.send(
+                    new builder.Message()
+                        .address(message.address)
+                        .text('Hey! Welkom op mijn website. Zin om te praten?')
+                );
+
+                bot.send(
+                    new builder.Message()
+                        .address(message.address)
+                        .text('Mijn naam is Michel Bouman, ik ben 37, heb 4 kids en werk voor Microsoft Nederland. Ik praat graag over digitale transformatie en nieuwe technologien als artificial intelligence, maar ben ook bezig met hoe ik nog slimmer de dag door kom.')
+                );
+
+            }
+        });
+    }
+});
+
+// Default Dialog
+bot.dialog('/', function (session) {
+
+    var msg = new builder.Message(session)
+        .text('Oei, ik denk dat ik je nog niet helemaal begrijp...')
+        .suggestedActions(
+        builder.SuggestedActions.create(
+            session, [
+                builder.CardAction.postBack(session, 'experience', 'Michel, wat voor werk ervaring heb je?'),
+                builder.CardAction.postBack(session, 'work-smarter', 'Even terug. Je zei iets over slimmer werken. Tell me more!'),
+                builder.CardAction.postBack(session, 'contact', 'Ik wil graag met je in contact komen.')
+            ]
+        ));
+
+    // const card = new builder.HeroCard(session)
+    //     .title('Waar hoor je graag meer over?')
+    //     .buttons([
+    //         builder.CardAction.postBack(session, 'experience', 'Michel, wat voor werk ervaring heb je?'),
+    //         builder.CardAction.postBack(session, 'work-smarter', 'Even terug. Je zei iets over slimmer werken. Tell me more!'),
+    //         builder.CardAction.postBack(session, 'contact', 'Ik wil graag met je in contact komen.')
+    //     ]);
+
+    // var msg = new builder.Message(session).addAttachment(card);
+    session.endDialog(msg);
+}).triggerAction({
+    matches: ['Default']
+});
+
+// Default Dialog
+bot.dialog('/unknown', function (session) {
+
+    var msg = new builder.Message(session)
+        .text('Oei, ik denk dat ik je nog niet helemaal begrijp...')
+        .suggestedActions(
+        builder.SuggestedActions.create(
+            session, [
+                builder.CardAction.postBack(session, 'experience', 'Michel, wat voor werk ervaring heb je?'),
+                builder.CardAction.postBack(session, 'work-smarter', 'Even terug. Je zei iets over slimmer werken. Tell me more!'),
+                builder.CardAction.postBack(session, 'contact', 'Ik wil graag met je in contact komen.')
+            ]
+        ));
+
+}).triggerAction({
+    matches: ['Default', 'unknown']
+});
+
+// QnA Maker Dialog
+bot.dialog('/qna', function (session, args, next) {
+    const answerEntity = builder.EntityRecognizer.findEntity(args.intent.entities, 'answer');
+    session.endDialog(answerEntity.entity);
+}).triggerAction({
+    matches: ['qna']
+});
+
+// Greeting Dialog
+bot.dialog('/greeting', function (session) {
+    session.endDialog("Greeting");
+}).triggerAction({ matches: 'Greeting' });
+
+// Contact Dialog
+bot.dialog('/contact', [
+    (session, args, next) => {
+        builder.Prompts.confirm(session, 'Je kunt me via twitter bereiken op http://www.twitter.com/boumanmichel of wil je me liever e-mailen?');
+    },
+    (session, args, next) => {
+        if (args.response == false) {
+            session.endDialog('Okidoki. Ik zie je tweet wel verschijnen. Als ik iets voor je kan doen, dan weet je me te vinden.');
+            return;
+        }
+        builder.Prompts.text(session, 'Wat is je e-mail adres?')
+    },
+
+    (session, args, next) => {
+        if (args.response) {
+            session.dialogData.email = args.response;
+            builder.Prompts.text(session, 'Got it. Je kunt het bericht typen en ik zorg er dan voor, dat de e-mail verstuurd wordt.');
+        }
+    },
+    (session, args, next) => {
+        if (args.response) {
+            session.dialogData.text = args.response;
+
+            const nodemailer = require('nodemailer');
+            const smtpTransport = require('nodemailer-smtp-transport');
+
+            let transporter = nodemailer.createTransport(smtpTransport({
+                host: process.env.MailHost,
+                port: 587,
+                secure: false, // use TLS
+                auth: {
+                    user: process.env.MailUser,
+                    pass: process.env.MailPassword
+                },
+                tls: {
+                    rejectUnauthorized: false
+                }
+            }));
+
+            transporter.verify(function (error, success) {
+                if (error) {
+                    console.log(error);
+                } else {
+                    console.log('Server is ready to take our messages');
+                }
+            });
+
+            const mailOptions = {
+                from: session.dialogData.email, // sender address
+                to: 'bot@michelbouman.nl', // list of receivers
+                subject: 'Mail vanaf de bot', // Subject line
+                text: session.dialogData.text
+            };
+
+            transporter.sendMail(mailOptions, function (error, info) {
+                if (error) {
+                    session.error(error);
+                } else {
+                    session.send('Je bericht is verzonden, je hoort snel van me!');
+                };
+            });
+
+        }
+
+    }
+]).triggerAction({ matches: 'Contact' });
+
+// Help Dialog
+bot.dialog('/help', function (session) {
+    session.endDialog("Help");
+}).triggerAction({ matches: 'Help' });
+
+// Career Dialog
+bot.dialog('/career', [
+    (session, args, next) => {
+        builder.Prompts.choice(session, 'Ik werk sinds 2012 voor Microsoft Nederland. Daarvoor heb ik in sales management functies gewerkt bij Misco Nederland, DTG en de zakelijke afdeling van T-Mobile. \n \n',
+            [
+                'Wat doe je voor Microsoft?',
+                'Ik wil met je in contact komen'
+            ]);
+
+    },
+    (session, args, next) => {
+        if (args.response.index !== undefined) {
+            switch (args.response.index) {
+                case 0:
+                    session.beginDialog('/msft');
+                    break;
+                case 1:
+                    session.beginDialog('/contact');
+                    break;
+                default:
+                    session.endDialog('');
+            }
+        }
+
+    }
+]).triggerAction({ matches: 'Carriere' });
