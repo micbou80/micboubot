@@ -120,9 +120,9 @@ bot.on('conversationUpdate', (message) => {
                 const card = new builder.HeroCard(session)
                     .title('Waar hoor je graag meer over?')
                     .buttons([
-                        builder.CardAction.postBack(session, 'experience', 'Michel, wat voor werk ervaring heb je?'),
-                        builder.CardAction.postBack(session, 'work-smarter', 'Even terug. Je zei iets over slimmer werken. Tell me more!'),
-                        builder.CardAction.postBack(session, 'contact', 'Ik wil graag met je in contact komen.')
+                        builder.CardAction.postBack(null, 'experience', 'Michel, wat voor werk ervaring heb je?'),
+                        builder.CardAction.postBack(null, 'work-smarter', 'Even terug. Je zei iets over slimmer werken. Tell me more!'),
+                        builder.CardAction.postBack(null, 'contact', 'Ik wil graag met je in contact komen.')
                     ]);
 
 
