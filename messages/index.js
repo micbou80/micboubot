@@ -117,7 +117,7 @@ bot.on('conversationUpdate', (message) => {
                         .text('Mijn naam is Michel Bouman, ik ben 37, heb 4 kids en werk voor Microsoft Nederland. Ik praat graag over digitale transformatie en nieuwe technologien als artificial intelligence, maar ben ook bezig met hoe ik nog slimmer de dag door kom.')
                 );
 
-                const card = new builder.HeroCard(session)
+                const card = new builder.HeroCard()
                     .title('Waar hoor je graag meer over?')
                     .buttons([
                         builder.CardAction.postBack(null, 'experience', 'Michel, wat voor werk ervaring heb je?'),
@@ -247,30 +247,3 @@ bot.dialog('/contact', [
 bot.dialog('/help', function (session) {
     session.endDialog("Help");
 }).triggerAction({ matches: 'Help' });
-
-// Career Dialog
-bot.dialog('/career', [
-    (session, args, next) => {
-        builder.Prompts.choice(session, 'Ik werk sinds 2012 voor Microsoft Nederland. Daarvoor heb ik in sales management functies gewerkt bij Misco Nederland, DTG en de zakelijke afdeling van T-Mobile. \n \n',
-            [
-                'Wat doe je voor Microsoft?',
-                'Ik wil met je in contact komen'
-            ]);
-
-    },
-    (session, args, next) => {
-        if (args.response.index !== undefined) {
-            switch (args.response.index) {
-                case 0:
-                    session.beginDialog('/msft');
-                    break;
-                case 1:
-                    session.beginDialog('/contact');
-                    break;
-                default:
-                    session.endDialog('');
-            }
-        }
-
-    }
-]).triggerAction({ matches: 'Carriere' });
