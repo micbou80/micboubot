@@ -111,20 +111,14 @@ bot.on('conversationUpdate', (message) => {
                         .text('Hey! Welkom op mijn website. Zin om te praten?')
                 );
 
-                bot.send(
-                    new builder.Message()
-                        .address(message.address)
-                        .text('Mijn naam is Michel Bouman, ik ben 37, heb 4 kids en werk voor Microsoft Nederland. Ik praat graag over digitale transformatie en nieuwe technologien als artificial intelligence, maar ben ook bezig met hoe ik nog slimmer de dag door kom.')
-                );
-
                 const card = new builder.HeroCard()
                     .title('Waar hoor je graag meer over?')
+                    .text('Mijn naam is Michel Bouman, ik ben 37, heb 4 kids en werk voor Microsoft Nederland. Ik praat graag over digitale transformatie en nieuwe technologien als artificial intelligence, maar ben ook bezig met hoe ik nog slimmer de dag door kom.')
                     .buttons([
                         builder.CardAction.postBack(null, 'experience', 'Michel, wat voor werk ervaring heb je?'),
                         builder.CardAction.postBack(null, 'work-smarter', 'Even terug. Je zei iets over slimmer werken. Tell me more!'),
                         builder.CardAction.postBack(null, 'contact', 'Ik wil graag met je in contact komen.')
                     ]);
-
 
                 bot.send(
                     new builder.Message()
