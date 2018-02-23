@@ -130,8 +130,7 @@ bot.on('conversationUpdate', (message) => {
 
                 const msg = new builder.Message(session).addAttachment(card);
 
-                session.endDialog(msg);
-
+                bot.send(msg);
             }
         });
     }
@@ -140,15 +139,7 @@ bot.on('conversationUpdate', (message) => {
 // Default Dialog
 bot.dialog('/', function (session) {
 
-    const card = new builder.HeroCard(session)
-        .title('Waar hoor je graag meer over?')
-        .buttons([
-            builder.CardAction.postBack(session, 'experience', 'Michel, wat voor werk ervaring heb je?'),
-            builder.CardAction.postBack(session, 'work-smarter', 'Even terug. Je zei iets over slimmer werken. Tell me more!'),
-            builder.CardAction.postBack(session, 'contact', 'Ik wil graag met je in contact komen.')
-        ]);
-
-    var msg = new builder.Message(session).addAttachment(card);
+    session.send('Default Dialog')
 
     session.endDialog(msg);
 }).triggerAction({
