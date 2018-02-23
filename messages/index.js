@@ -109,22 +109,22 @@ bot.on('conversationUpdate', (message) => {
                 bot.send(
                     new builder.Message()
                         .address(message.address)
-                        .text('Hey! Welkom op mijn website. Zin om te praten?')
+                        .text('Hey! Welcome on my website. Wanna talk?')
                 );
 
-                bot.send(
-                    new builder.Message()
-                        .address(message.address)
-                        .text('Mijn naam is Michel Bouman, ik ben 37, heb 4 kids en werk voor Microsoft Nederland. Ik praat graag over digitale transformatie en nieuwe technologien als artificial intelligence, maar ben ook bezig met hoe ik nog slimmer de dag door kom.')
-                        .suggestedActions(
-                            builder.SuggestedActions.create(
-                                null, [
-                                    builder.CardAction.postBack(null, 'experience', 'Michel, wat voor werk ervaring heb je?'),
-                                    builder.CardAction.postBack(null, 'work-smarter', 'Even terug. Je zei iets over slimmer werken. Tell me more!'),
-                                    builder.CardAction.postBack(null, 'contact', 'Ik wil graag met je in contact komen.')
-                                ]
-                            ))
-                );
+                // bot.send(
+                //     new builder.Message()
+                //         .address(message.address)
+                //         .text('Mijn naam is Michel Bouman, ik ben 37, heb 4 kids en werk voor Microsoft Nederland. Ik praat graag over digitale transformatie en nieuwe technologien als artificial intelligence, maar ben ook bezig met hoe ik nog slimmer de dag door kom.')
+                //         .suggestedActions(
+                //             builder.SuggestedActions.create(
+                //                 null, [
+                //                     builder.CardAction.postBack(null, 'experience', 'Michel, wat voor werk ervaring heb je?'),
+                //                     builder.CardAction.postBack(null, 'work-smarter', 'Even terug. Je zei iets over slimmer werken. Tell me more!'),
+                //                     builder.CardAction.postBack(null, 'contact', 'Ik wil graag met je in contact komen.')
+                //                 ]
+                //             ))
+                // );
 
             }
         });
@@ -132,15 +132,59 @@ bot.on('conversationUpdate', (message) => {
 });
 
 // Default Dialog
-bot.dialog('/', function (session) {
-    session.send('Default Dialog')
-    session.endDialog();
-}).triggerAction({
-    matches: ['Default']
+bot.dialog('/',
+    (session, args, next) => {
+        if (session.userData.name !== undefined) {
+            session.send('Hey %s! Tof, dat weer terug bent om met me te praten..', session.userData.name);
+            next();
+        } else {
+            builder.Prompts.text(session, 'First things first. Mijn naam is Michel Bot. Wat is jouw naam?');
+        }
+    },
+    (session, args, next) => {
+        if (args.response) {
+            session.userData.name = args.response;
+            session.send('Thanks, love it! Welkom op mn website %s en leuk dat we even samen kunnen babbelen.', session.userData.name);
+        }
+
+        builder.Prompts.choice(session, 'Waar zullen we het ver hebben?', [
+            'Vertel me over je werkervaring',
+            'Im interested in your e-book.',
+            'Ik kom echt tijd te kort op een dag. Hoe doe jij dat?',
+            'Hoe kom ik in contact met je?'
+        ], { listStyle: builder.ListStyle.button, maxRetries: 2 });
+    },
+    (session, args, next) => {
+        if (args.response.index !== undefined) {
+            switch (args.response.index) {
+                case 0:
+                    session.beginDialog('/experience');
+                    break;
+                case 1:
+                    session.beginDialog('/ebook');
+                    break;
+                case 2:
+                    session.beginDialog('/work-smarter');
+                    break;
+                case 3:
+                    session.beginDialog('/contact');
+                    break;
+                default:
+                    session.endDialog('dat behoorde niet tot de keuzes, niet valsspelen. Probeer het nog een keer');
+            }
+        }
+    }
+).triggerAction({
+    matches: ['Default', 'Greeting']
 });
 
+// // Greeting Dialog (LUIS)
+// bot.dialog('/greeting', (session) => {
+//     session.endDialog('Hi');
+// }).triggerAction({ matches: ['Greeting'] });
+
 // Unknown Dialog
-bot.dialog('/unknown', function (session) {
+bot.dialog('/unknown', (session) => {
 
     var msg = new builder.Message(session)
         .text('Oei, ik denk dat ik je nog niet helemaal begrijp...')
@@ -158,35 +202,115 @@ bot.dialog('/unknown', function (session) {
 });
 
 // QnA Maker Dialog
-bot.dialog('/qna', function (session, args, next) {
+bot.dialog('/qna', (session, args, next) => {
     const answerEntity = builder.EntityRecognizer.findEntity(args.intent.entities, 'answer');
     session.endDialog(answerEntity.entity);
 }).triggerAction({
     matches: ['qna']
 });
 
-// Greeting Dialog (LUIS)
-bot.dialog('/greeting', function (session) {
-    session.endDialog('Hi');
-}).triggerAction({ matches: ['Greeting'] });
+// Help Dialog
+bot.dialog('/help', (session) => {
+    session.endDialog('Help Dialog');
+}).triggerAction({ matches: 'Help' });
 
-// Contact Dialog (LUIS)
+bot.dialog('/ebook', [
+    (session, args, next) => {
+
+        builder.Prompts.choice(session, 'Wacht even...hoe weet je dat? Het e-book over Digitale Transformation in het MKB moet ergens in Q1 van 2018 uitkomen.', [
+            'Hou me op de hoogte!',
+            'Ok, dan kom ik later nog wel een keer terug.'
+        ], { listStyle: builder.ListStyle.button, maxRetries: 2 });
+
+    },
+    (session, args, next) => {
+        if (args.response.index !== undefined) {
+            switch (args.response.index) {
+
+                case 0:
+                    session.beginDialog('/contact');
+                    break;
+                case 1:
+                    session.beginDialog('/later');
+                    break;
+                default:
+                    session.endDialog('dat behoorde niet tot de keuzes, niet valsspelen. Probeer het nog een keer');
+            }
+        }
+
+    }
+]);
+
+bot.dialog('/experience', [
+    (session, args, next) => {
+
+        builder.Prompts.choice(session, 'I have been working for the Dutch subsidiary of Microsoft since 2012. Before my role at Microsoft I have had sales management roles at Misco Nederland (part of Systemax Ltd.), European Directories and T-Mobile Business. In short; 18 years of work experience of which 12 in management.', [
+            'What do you do at Microsoft?',
+            'I would like to get in touch with you.'
+        ], { listStyle: builder.ListStyle.button, maxRetries: 2 });
+
+    },
+    (session, args, next) => {
+        if (args.response.index !== undefined) {
+            switch (args.response.index) {
+
+                case 0:
+                    session.beginDialog('/msft');
+                    break;
+                case 1:
+                    session.beginDialog('/contact');
+                    break;
+                default:
+                    session.endDialog('Please select one of the options');
+            }
+        }
+
+    }
+]);
+
+bot.dialog('/work-smarter', [
+    (session, args, next) => {
+
+        builder.Prompts.choice(session, 'Ja, dat ken ik! Ik probeer kleine hacks toe te passen. Mijn Inbox is altijd Zero en ik eet mn kikkers in de ochtend.', [
+            'WAT eet je in de ochtned!? Gadver!',
+            'Hoe werkt dat Inbox Zero?'
+        ], { listStyle: builder.ListStyle.button, maxRetries: 2 });
+
+    },
+    (session, args, next) => {
+        if (args.response.index !== undefined) {
+            switch (args.response.index) {
+
+                case 0:
+                    session.beginDialog('/frogs');
+                    break;
+                case 1:
+                    session.beginDialog('/inboxzero');
+                    break;
+                default:
+                    session.endDialog('Please select one of the options');
+            }
+        }
+
+    }
+]);
+
 bot.dialog('/contact', [
     (session, args, next) => {
-        builder.Prompts.confirm(session, 'Je kunt me via twitter bereiken op http://www.twitter.com/boumanmichel of wil je me liever e-mailen?');
+        builder.Prompts.confirm(session, 'I would love to hear from you ' + session.userData.name + '. Do want to send me an e-mail? (you can also DM me on twitter @boumanmichel)');
     },
     (session, args, next) => {
         if (args.response == false) {
-            session.endDialog('Okidoki. Ik zie je tweet wel verschijnen. Als ik iets voor je kan doen, dan weet je me te vinden.');
+            session.endDialog('Cool stuff, looking forward to your tweet. Feel free to poke me if you want to discuss something else.');
             return;
         }
-        builder.Prompts.text(session, 'Wat is je e-mail adres?')
+        builder.Prompts.text(session, 'Let me take care of that. What is your e-mail address?')
     },
 
     (session, args, next) => {
         if (args.response) {
             session.dialogData.email = args.response;
-            builder.Prompts.text(session, 'Got it. Je kunt het bericht typen en ik zorg er dan voor, dat de e-mail verstuurd wordt.');
+            builder.Prompts.text(session, 'Got it. So what message would you like to send (no pagebreaks needed).');
         }
     },
     (session, args, next) => {
@@ -197,15 +321,15 @@ bot.dialog('/contact', [
             const smtpTransport = require('nodemailer-smtp-transport');
 
             let transporter = nodemailer.createTransport(smtpTransport({
-                host: process.env.MailHost,
+                host: 'mail.michelbouman.nl',
                 port: 587,
                 secure: false, // use TLS
                 auth: {
-                    user: process.env.MailUser,
-                    pass: process.env.MailPassword
+                    user: 'bot@michelbouman.nl',
+                    pass: 'micboubot'
                 },
                 tls: {
-                    rejectUnauthorized: false
+                    rejectUnauthorized: false                     // do not fail on invalid certs
                 }
             }));
 
@@ -217,18 +341,19 @@ bot.dialog('/contact', [
                 }
             });
 
-            const mailOptions = {
+            var mailOptions = {
                 from: session.dialogData.email, // sender address
                 to: 'bot@michelbouman.nl', // list of receivers
-                subject: 'Mail vanaf de bot', // Subject line
+                subject: 'Bot Mail', // Subject line
                 text: session.dialogData.text
             };
 
             transporter.sendMail(mailOptions, function (error, info) {
                 if (error) {
-                    session.error(error);
+                    session.send('Error');
+                    console.log(error);
                 } else {
-                    session.send('Je bericht is verzonden, je hoort snel van me!');
+                    session.endDialog('Thanks' + session.userData.name + ', your message was sent to my inbox and I will reply as soon as possible. Let me know if you want to chat about something else.');
                 };
             });
 
@@ -237,7 +362,73 @@ bot.dialog('/contact', [
     }
 ]).triggerAction({ matches: 'Contact' });
 
-// Help Dialog
-bot.dialog('/help', function (session) {
-    session.endDialog("Help");
-}).triggerAction({ matches: 'Help' });
+bot.dialog('/msft', [
+    (session, args, next) => {
+        builder.Prompts.confirm(session, 'I am a Territory Channel Manager with a focus on the modern workplace, data and artifical intelligence (like this bot). My role is all about enabling digital transformation for businesses in the SMB space with Microsoft partners. Would you like to read more about digital transformation  in SMB?');
+    },
+    (session, args, next) => {
+
+        if (args.response == true) {
+            session.endDialog('My e-book on digital transformation in SMB is almost done and should be available at the end of the summer. Want to chat about something else?')
+
+        } else {
+            session.endDialog('Alright. Well, feel free to scroll through my website. If there is anything I can do for you, please let me know.');
+        }
+    }
+]);
+
+bot.dialog('/later', [
+    function (session) {
+        session.endDialog('Ok, dan checken we elkaar snel weer. Als je zin hebt om verder te praten hoor ik het wel.');
+    }
+]);
+
+bot.dialog('/frogs', [
+    (session, args, next) => {
+        builder.Prompts.confirm(session, 'Haha, kikkers. Natuurlijk is dat maar een uitdrukking, maar ik doe de meest lastige of vervelende taak altijd zo vroeg mogelijk op de dag. Als dat eenmaal achter de rug is, dan is de rest easy-peasy. Snap je?');
+    },
+    (session, args, next) => {
+        if (args.response == true) {
+            session.endDialog('Ok, probeer het eens zou ik zeggen! Laat me weten als je nog iets anders wilt bespreken.')
+        } else {
+            session.endDialog('No worries, ik zal er binnenkort een blogje over schrijven. Wil je het nog ergens anders over hebben?');
+        }
+    }
+]);
+
+bot.dialog('/inboxzero', [
+
+    (session, args, next) => {
+
+        session.send('Step 1: Create 3 folders: Action, Wait and Archive');
+        session.send('Step 2: Move all e-mails in current subfolders to your archive (your mailbox its search engine is smart enough -trust me.');
+
+        session.sendTyping();
+
+        setTimeout(function () {
+
+            session.send('Step 3: Start going through your inbox and move action items to the action folder and all other mail to archive');
+
+            session.sendTyping();
+
+            setTimeout(function () {
+                session.send('Step 4: Set times in your agenda to work on your action folder and to bring your inbox to zero.');
+                session.send('Emails that need following up from someone else are moved to the wait folder. I check my action folder once a day and my wait twice a week');
+
+                setTimeout(function () {
+                    builder.Prompts.confirm(session, 'This method has helped me a lot since I started working with it about eight years ago. Now I never lose track of actionable emails and I am not being distracted by all the clutter. Get it?');
+                }, 1000);
+
+            }, 1250);
+
+        }, 1500);
+
+    },
+    (session, args, next) => {
+        if (args.response == true) {
+            session.endDialog('Nice, I wonder how it works for you! Let me know if you want to discuss something else.')
+        } else {
+            session.endDialog('No worries, I have a blog coming up on the topic. Want to chat about something else?');
+        }
+    }
+]);
