@@ -80,8 +80,9 @@ bot.use(builder.Middleware.sendTyping());
 // LUIS Recognizer
 const luisAppId = process.env.LuisAppId;
 const luisAPIKey = process.env.LuisAPIKey;
+const bingSpellCheckKey = process.env.BingSpellCheckKey;
 const luisAPIHostName = process.env.LuisAPIHostName || 'westeurope.api.cognitive.microsoft.com';
-const LuisModelUrl = 'https://' + luisAPIHostName + '/luis/v2.0/apps/' + luisAppId + '?subscription-key=' + luisAPIKey;
+const LuisModelUrl = 'https://' + luisAPIHostName + '/luis/v2.0/apps/' + luisAppId + '?subscription-key=' + luisAPIKey + '&spellCheck=true&bing-spell-check-subscription-key=' + bingSpellCheckKey;
 
 const luis_recognizer = new builder.LuisRecognizer(LuisModelUrl);
 bot.recognizer(luis_recognizer);
@@ -125,21 +126,6 @@ bot.on('conversationUpdate', (message) => {
                             ))
                 );
 
-                // const card = new builder.HeroCard()
-                //     .title('Waar hoor je graag meer over?')
-                //     .buttons([
-                //         builder.CardAction.postBack(null, 'experience', 'Michel, wat voor werk ervaring heb je?'),
-                //         builder.CardAction.postBack(null, 'work-smarter', 'Even terug. Je zei iets over slimmer werken. Tell me more!'),
-                //         builder.CardAction.postBack(null, 'contact', 'Ik wil graag met je in contact komen.')
-                //     ]);
-
-
-                // bot.send(
-                //     new builder.Message()
-                //         .address(message.address)
-                //         .addAttachment(card)
-                // );
-
             }
         });
     }
@@ -182,7 +168,7 @@ bot.dialog('/qna', function (session, args, next) {
 // Greeting Dialog (LUIS)
 bot.dialog('/greeting', function (session) {
     session.endDialog('Hi');
-}).triggerAction({ matches: 'Greeting' });
+}).triggerAction({ matches: ['Greeting'] });
 
 // Contact Dialog (LUIS)
 bot.dialog('/contact', [
