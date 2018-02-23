@@ -120,6 +120,18 @@ bot.on('conversationUpdate', (message) => {
                         .text('Mijn naam is Michel Bouman, ik ben 37, heb 4 kids en werk voor Microsoft Nederland. Ik praat graag over digitale transformatie en nieuwe technologien als artificial intelligence, maar ben ook bezig met hoe ik nog slimmer de dag door kom.')
                 );
 
+                const card = new builder.HeroCard(session)
+                    .title('Waar hoor je graag meer over?')
+                    .buttons([
+                        builder.CardAction.postBack(session, 'experience', 'Michel, wat voor werk ervaring heb je?'),
+                        builder.CardAction.postBack(session, 'work-smarter', 'Even terug. Je zei iets over slimmer werken. Tell me more!'),
+                        builder.CardAction.postBack(session, 'contact', 'Ik wil graag met je in contact komen.')
+                    ]);
+
+                const msg = new builder.Message(session).addAttachment(card);
+
+                session.endDialog(msg);
+
             }
         });
     }
@@ -128,26 +140,16 @@ bot.on('conversationUpdate', (message) => {
 // Default Dialog
 bot.dialog('/', function (session) {
 
-    var msg = new builder.Message(session)
-        .text('Oei, ik denk dat ik je nog niet helemaal begrijp...')
-        .suggestedActions(
-        builder.SuggestedActions.create(
-            session, [
-                builder.CardAction.postBack(session, 'experience', 'Michel, wat voor werk ervaring heb je?'),
-                builder.CardAction.postBack(session, 'work-smarter', 'Even terug. Je zei iets over slimmer werken. Tell me more!'),
-                builder.CardAction.postBack(session, 'contact', 'Ik wil graag met je in contact komen.')
-            ]
-        ));
+    const card = new builder.HeroCard(session)
+        .title('Waar hoor je graag meer over?')
+        .buttons([
+            builder.CardAction.postBack(session, 'experience', 'Michel, wat voor werk ervaring heb je?'),
+            builder.CardAction.postBack(session, 'work-smarter', 'Even terug. Je zei iets over slimmer werken. Tell me more!'),
+            builder.CardAction.postBack(session, 'contact', 'Ik wil graag met je in contact komen.')
+        ]);
 
-    // const card = new builder.HeroCard(session)
-    //     .title('Waar hoor je graag meer over?')
-    //     .buttons([
-    //         builder.CardAction.postBack(session, 'experience', 'Michel, wat voor werk ervaring heb je?'),
-    //         builder.CardAction.postBack(session, 'work-smarter', 'Even terug. Je zei iets over slimmer werken. Tell me more!'),
-    //         builder.CardAction.postBack(session, 'contact', 'Ik wil graag met je in contact komen.')
-    //     ]);
+    var msg = new builder.Message(session).addAttachment(card);
 
-    // var msg = new builder.Message(session).addAttachment(card);
     session.endDialog(msg);
 }).triggerAction({
     matches: ['Default']
@@ -159,16 +161,16 @@ bot.dialog('/unknown', function (session) {
     var msg = new builder.Message(session)
         .text('Oei, ik denk dat ik je nog niet helemaal begrijp...')
         .suggestedActions(
-        builder.SuggestedActions.create(
-            session, [
-                builder.CardAction.postBack(session, 'experience', 'Michel, wat voor werk ervaring heb je?'),
-                builder.CardAction.postBack(session, 'work-smarter', 'Even terug. Je zei iets over slimmer werken. Tell me more!'),
-                builder.CardAction.postBack(session, 'contact', 'Ik wil graag met je in contact komen.')
-            ]
-        ));
+            builder.SuggestedActions.create(
+                session, [
+                    builder.CardAction.postBack(session, 'experience', 'Michel, wat voor werk ervaring heb je?'),
+                    builder.CardAction.postBack(session, 'work-smarter', 'Even terug. Je zei iets over slimmer werken. Tell me more!'),
+                    builder.CardAction.postBack(session, 'contact', 'Ik wil graag met je in contact komen.')
+                ]
+            ));
 
 }).triggerAction({
-    matches: ['Default', 'unknown']
+    matches: ['unknown']
 });
 
 // QnA Maker Dialog
