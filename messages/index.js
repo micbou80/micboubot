@@ -94,9 +94,6 @@ const qna_recognizer = new builder_cognitiveservices.QnAMakerRecognizer({
 
 bot.recognizer(qna_recognizer);
 
-// RegExpRecognizer
-// bot.recognizer(new builder.RegExpRecognizer( "CancelIntent", { en_us: /^(cancel|nevermind)/i, ja_jp: /^(キャンセル)/ }));
-
 //=========================================================
 // Bots Dialogs
 //=========================================================
@@ -128,9 +125,13 @@ bot.on('conversationUpdate', (message) => {
                         builder.CardAction.postBack(session, 'contact', 'Ik wil graag met je in contact komen.')
                     ]);
 
-                const msg = new builder.Message(session).addAttachment(card);
 
-                bot.send(msg);
+                bot.send(
+                    new builder.Message()
+                        .address(message.address)
+                        .addAttachment(card)
+                );
+
             }
         });
     }
@@ -138,15 +139,13 @@ bot.on('conversationUpdate', (message) => {
 
 // Default Dialog
 bot.dialog('/', function (session) {
-
     session.send('Default Dialog')
-
-    session.endDialog(msg);
+    session.endDialog();
 }).triggerAction({
     matches: ['Default']
 });
 
-// Default Dialog
+// Unknown Dialog
 bot.dialog('/unknown', function (session) {
 
     var msg = new builder.Message(session)
@@ -172,12 +171,12 @@ bot.dialog('/qna', function (session, args, next) {
     matches: ['qna']
 });
 
-// Greeting Dialog
+// Greeting Dialog (LUIS)
 bot.dialog('/greeting', function (session) {
-    session.endDialog("Greeting");
+    session.endDialog('Greeting');
 }).triggerAction({ matches: 'Greeting' });
 
-// Contact Dialog
+// Contact Dialog (LUIS)
 bot.dialog('/contact', [
     (session, args, next) => {
         builder.Prompts.confirm(session, 'Je kunt me via twitter bereiken op http://www.twitter.com/boumanmichel of wil je me liever e-mailen?');
