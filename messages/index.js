@@ -173,7 +173,7 @@ bot.dialog('/qna', function (session, args, next) {
 
 // Greeting Dialog (LUIS)
 bot.dialog('/greeting', function (session) {
-    session.endDialog('Greeting');
+    session.endDialog('Hi');
 }).triggerAction({ matches: 'Greeting' });
 
 // Contact Dialog (LUIS)
