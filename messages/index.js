@@ -132,7 +132,7 @@ bot.on('conversationUpdate', (message) => {
                 bot.send(
                     new builder.Message()
                         .address(message.address)
-                        .text('Mijn naam is Michel Bouman, ik ben 37, heb 4 kids en werk voor Microsoft Nederland. Ik praat graag over digitale transformatie en nieuwe technologien als artificial intelligence, maar ben ook bezig met hoe ik nog slimmer de dag door kom.')
+                        .text('My name is Michel. I am a proud husband, father and Microsoft employee. I am very much into digital transformation of company and tech like artificial intelligence. Since I decided to go back to school last year, my life is quite full. Therefore, I am also very much into productivity hack.')
                         .suggestedActions(
                             builder.SuggestedActions.create(
                                 null, [
