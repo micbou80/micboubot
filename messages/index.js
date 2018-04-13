@@ -143,7 +143,7 @@ bot.dialog('/name', [
     (session, args, next) => {
         if (args.response) {
             session.userData.name = args.response;
-            session.endDialog('hanks, love it! Welcome to the site %s. Lets chat', session.userData.name);
+            session.endDialog('Thanks, love it! Welcome to the site %s. Lets chat!', session.userData.name);
         } else {
             next();
         }
@@ -317,16 +317,24 @@ bot.dialog('/work-smarter', [
 
 bot.dialog('/contact', [
     (session, args, next) => {
-        builder.Prompts.confirm(session, 'I would love to hear from you ' + session.userData.name + '. You can reach me by e-mail or book 15 minutes in my calendar. Which one do you prefer?');
+
+        let message = 'I would love to hear from you. You can reach me by e-mail or book 15 minutes in my calendar. Which one do you prefer?';
+        if (session.userData.name !== undefined) {
+            message = 'I would love to hear from you, ' + session.userData.name + '. You can reach me by e-mail or book 15 minutes in my calendar. Which one do you prefer?'
+        }
+
+        builder.Prompts.choice(session, message , [
+            'Email',
+            'Calendar'
+        ], { listStyle: builder.ListStyle.button, maxRetries: 2 });
     },
     (session, args, next) => {
-        if (args.response == false) {
-            session.endDialog('Cool stuff, you can go to http://aka.ms/meetmichel to schedule');
+        if (args.response.entity == 'Calendar') {
+            session.endDialog('Cool stuff, you can go to http://aka.ms/meetmichel to schedule.');
             return;
         }
         builder.Prompts.text(session, 'Let me take care of that. What is your e-mail address?')
     },
-
     (session, args, next) => {
         if (args.response) {
             session.dialogData.email = args.response;
