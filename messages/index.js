@@ -323,7 +323,7 @@ bot.dialog('/contact', [
             message = 'I would love to hear from you, ' + session.userData.name + '. You can reach me by e-mail or book 15 minutes in my calendar. Which one do you prefer?'
         }
 
-        builder.Prompts.choice(session, message , [
+        builder.Prompts.choice(session, message, [
             'Email',
             'Calendar'
         ], { listStyle: builder.ListStyle.button, maxRetries: 2 });
@@ -357,11 +357,11 @@ bot.dialog('/contact', [
                     pass: 'micboubot'
                 },
                 tls: {
-                    rejectUnauthorized: false                     // do not fail on invalid certs
+                    rejectUnauthorized: false // do not fail on invalid certs
                 }
             }));
 
-            transporter.verify(function (error, success) {
+            transporter.verify((error, success) => {
                 if (error) {
                     console.log(error);
                 } else {
@@ -369,17 +369,16 @@ bot.dialog('/contact', [
                 }
             });
 
-            var mailOptions = {
+            const mailOptions = {
                 from: session.dialogData.email, // sender address
                 to: 'bot@michelbouman.nl', // list of receivers
                 subject: 'Bot Mail', // Subject line
                 text: session.dialogData.text
             };
 
-            transporter.sendMail(mailOptions, function (error, info) {
+            transporter.sendMail(mailOptions, (error, info) => {
                 if (error) {
-                    session.send('Error');
-                    console.log(error);
+                    session.error(error);
                 } else {
                     session.endDialog('Thanks' + session.userData.name + ', your message was sent to my inbox and I will reply as soon as possible. Let me know if you want to chat about something else.');
                 };
