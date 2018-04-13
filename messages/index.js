@@ -136,9 +136,9 @@ bot.on('conversationUpdate', (message) => {
                         .suggestedActions(
                             builder.SuggestedActions.create(
                                 null, [
-                                    builder.CardAction.postBack(null, 'experience', 'Michel, wat voor werk ervaring heb je?'),
-                                    builder.CardAction.postBack(null, 'work-smarter', 'Even terug. Je zei iets over slimmer werken. Tell me more!'),
-                                    builder.CardAction.postBack(null, 'contact', 'Ik wil graag met je in contact komen.')
+                                    builder.CardAction.postBack(null, 'experience', 'Work at Microsoft?'),
+                                    builder.CardAction.postBack(null, 'work-smarter', 'Productivity'),
+                                    builder.CardAction.postBack(null, 'contact', 'Get in touch')
                                 ]
                             ))
                 );
@@ -157,7 +157,7 @@ bot.dialog('/name', [
 
         if (args.response) {
             session.userData.name = args.response;
-            session.send('Thanks, love it! Welkom op mn website %s en leuk dat we even samen kunnen babbelen.', session.userData.name);
+            session.send('Thanks, love it! Welcome to the site %s. Lets chat', session.userData.name);
         }
     }
 ]);
@@ -166,7 +166,7 @@ bot.dialog('/name', [
 bot.dialog('/',
     (session, args, next) => {
         if (session.userData.name !== undefined) {
-            session.send('Hey %s! Tof, dat weer terug bent om met me te praten..', session.userData.name);
+            session.send('Hey %s! I am excited to see you back here', session.userData.name);
             next();
         }
         next();
@@ -174,14 +174,14 @@ bot.dialog('/',
     (session, args, next) => {
         if (args.response) {
             session.userData.name = args.response;
-            session.send('Thanks, love it! Welkom op mn website %s en leuk dat we even samen kunnen babbelen.', session.userData.name);
+            session.send('Thanks, love it! Welcome to the site %s. Lets chat', session.userData.name);
         }
 
-        builder.Prompts.choice(session, 'Waar zullen we het ver hebben?', [
-            'Vertel me over je werkervaring',
-            'Im interested in your e-book.',
-            'Ik kom echt tijd te kort op een dag. Hoe doe jij dat?',
-            'Hoe kom ik in contact met je?'
+        builder.Prompts.choice(session, 'What would you like to talk about?', [
+            'Tell me about your work experience',
+            'Why did you go back to school?',
+            'I wish I had more time. How do you manage?',
+            'I want to get in touch with you'
         ], { listStyle: builder.ListStyle.button, maxRetries: 2 });
     },
     (session, args, next) => {
@@ -217,13 +217,13 @@ bot.dialog('/joke', (session) => {
 bot.dialog('/unknown', (session) => {
 
     var msg = new builder.Message(session)
-        .text('Oei, ik denk dat ik je nog niet helemaal begrijp...')
+        .text('Uh oh, I think my artificial brain needs some tweaking, because I am not sure what to do now.')
         .suggestedActions(
             builder.SuggestedActions.create(
                 session, [
-                    builder.CardAction.postBack(session, 'experience', 'Michel, wat voor werk ervaring heb je?'),
-                    builder.CardAction.postBack(session, 'work-smarter', 'Even terug. Je zei iets over slimmer werken. Tell me more!'),
-                    builder.CardAction.postBack(session, 'contact', 'Ik wil graag met je in contact komen.')
+                    builder.CardAction.postBack(session, 'experience', 'So, tell me about your work experience'),
+                    builder.CardAction.postBack(session, 'work-smarter', 'Do you have any productivity tips?'),
+                    builder.CardAction.postBack(session, 'contact', 'How do I get in touch with you?.')
                 ]
             ));
 
@@ -327,11 +327,11 @@ bot.dialog('/work-smarter', [
 
 bot.dialog('/contact', [
     (session, args, next) => {
-        builder.Prompts.confirm(session, 'I would love to hear from you ' + session.userData.name + '. Do want to send me an e-mail? (you can also DM me on twitter @boumanmichel)');
+        builder.Prompts.confirm(session, 'I would love to hear from you ' + session.userData.name + '. You can reach me by e-mail or book 15 minutes in my calendar. Which one do you prefer?');
     },
     (session, args, next) => {
         if (args.response == false) {
-            session.endDialog('Cool stuff, looking forward to your tweet. Feel free to poke me if you want to discuss something else.');
+            session.endDialog('Cool stuff, you can go to http://aka.ms/meetmichel to schedule');
             return;
         }
         builder.Prompts.text(session, 'Let me take care of that. What is your e-mail address?')
