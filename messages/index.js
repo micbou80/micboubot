@@ -73,6 +73,23 @@ if (is_development) {
 bot.use(builder.Middleware.dialogVersion({ version: 1.0, resetCommand: /^reset/i }));
 bot.use(builder.Middleware.sendTyping());
 
+bot.use({
+    receive: function (message, next) {
+        next();
+    },
+    botbuilder: function (session, next) {
+        // if (session.userData.name !== undefined && session.dialogStack()[0].id !== '*:/name') {
+        //     next();
+        // }
+
+        // session.beginDialog('/name');
+        next();
+    },
+    send: function (message, next) {
+        next();
+    }
+});
+
 //=========================================================
 // Bots Recognizers
 //=========================================================
@@ -112,24 +129,38 @@ bot.on('conversationUpdate', (message) => {
                         .text('Hey! Welcome on my website. Wanna talk?')
                 );
 
-                // bot.send(
-                //     new builder.Message()
-                //         .address(message.address)
-                //         .text('Mijn naam is Michel Bouman, ik ben 37, heb 4 kids en werk voor Microsoft Nederland. Ik praat graag over digitale transformatie en nieuwe technologien als artificial intelligence, maar ben ook bezig met hoe ik nog slimmer de dag door kom.')
-                //         .suggestedActions(
-                //             builder.SuggestedActions.create(
-                //                 null, [
-                //                     builder.CardAction.postBack(null, 'experience', 'Michel, wat voor werk ervaring heb je?'),
-                //                     builder.CardAction.postBack(null, 'work-smarter', 'Even terug. Je zei iets over slimmer werken. Tell me more!'),
-                //                     builder.CardAction.postBack(null, 'contact', 'Ik wil graag met je in contact komen.')
-                //                 ]
-                //             ))
-                // );
+                bot.send(
+                    new builder.Message()
+                        .address(message.address)
+                        .text('Mijn naam is Michel Bouman, ik ben 37, heb 4 kids en werk voor Microsoft Nederland. Ik praat graag over digitale transformatie en nieuwe technologien als artificial intelligence, maar ben ook bezig met hoe ik nog slimmer de dag door kom.')
+                        .suggestedActions(
+                            builder.SuggestedActions.create(
+                                null, [
+                                    builder.CardAction.postBack(null, 'experience', 'Michel, wat voor werk ervaring heb je?'),
+                                    builder.CardAction.postBack(null, 'work-smarter', 'Even terug. Je zei iets over slimmer werken. Tell me more!'),
+                                    builder.CardAction.postBack(null, 'contact', 'Ik wil graag met je in contact komen.')
+                                ]
+                            ))
+                );
 
             }
         });
     }
 });
+
+bot.dialog('/name', [
+    (session, args, next) => {
+        builder.Prompts.text(session, "First things first. My name is Michel Bot. What's your name?");
+    },
+    (session, args, next) => {
+        console.log(args);
+
+        if (args.response) {
+            session.userData.name = args.response;
+            session.send('Thanks, love it! Welkom op mn website %s en leuk dat we even samen kunnen babbelen.', session.userData.name);
+        }
+    }
+]);
 
 // Default Dialog
 bot.dialog('/',
@@ -137,9 +168,8 @@ bot.dialog('/',
         if (session.userData.name !== undefined) {
             session.send('Hey %s! Tof, dat weer terug bent om met me te praten..', session.userData.name);
             next();
-        } else {
-            builder.Prompts.text(session, 'First things first. Mijn naam is Michel Bot. Wat is jouw naam?');
         }
+        next();
     },
     (session, args, next) => {
         if (args.response) {
@@ -178,10 +208,10 @@ bot.dialog('/',
     matches: ['Default', 'Greeting']
 });
 
-// // Greeting Dialog (LUIS)
-// bot.dialog('/greeting', (session) => {
-//     session.endDialog('Hi');
-// }).triggerAction({ matches: ['Greeting'] });
+// Joke Dialog (LUIS)
+bot.dialog('/joke', (session) => {
+    session.endDialog('Joke');
+}).triggerAction({ matches: ['Joke'] });
 
 // Unknown Dialog
 bot.dialog('/unknown', (session) => {
