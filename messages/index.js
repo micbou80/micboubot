@@ -44,8 +44,11 @@ if (!is_development) {
     const tableName = 'botdata';
     const azureTableClient = new botbuilder_azure.AzureTableClient(tableName, process.env['AzureWebJobsStorage']);
     const tableStorage = new botbuilder_azure.AzureBotStorage({ gzipData: false }, azureTableClient);
-
     bot.set('storage', tableStorage);
+} else {
+    // Set up temporary storage
+    const inMemoryStorage = new builder.MemoryBotStorage();
+    bot.set('storage', inMemoryStorage)
 }
 
 if (is_development) {
@@ -72,12 +75,14 @@ if (is_development) {
 // Anytime the major version is incremented any existing conversations will be restarted.
 bot.use(builder.Middleware.dialogVersion({ version: 1.0, resetCommand: /^reset/i }));
 bot.use(builder.Middleware.sendTyping());
+bot.use(builder.Middleware.firstRun({ version: 1.0, dialogId: '*:/name' }));
 
+// Custom Middleware
 bot.use({
-    receive: function (message, next) {
+    receive: (message, next) => {
         next();
     },
-    botbuilder: function (session, next) {
+    botbuilder: (session, next) => {
         // if (session.userData.name !== undefined && session.dialogStack()[0].id !== '*:/name') {
         //     next();
         // }
@@ -85,7 +90,7 @@ bot.use({
         // session.beginDialog('/name');
         next();
     },
-    send: function (message, next) {
+    send: (message, next) => {
         next();
     }
 });
@@ -129,20 +134,21 @@ bot.on('conversationUpdate', (message) => {
                         .text('Hey! Welcome on my website. Wanna talk?')
                 );
 
-                bot.send(
-                    new builder.Message()
-                        .address(message.address)
-                        .text('Mijn naam is Michel Bouman, ik ben 37, heb 4 kids en werk voor Microsoft Nederland. Ik praat graag over digitale transformatie en nieuwe technologien als artificial intelligence, maar ben ook bezig met hoe ik nog slimmer de dag door kom.')
-                        .suggestedActions(
-                            builder.SuggestedActions.create(
-                                null, [
-                                    builder.CardAction.postBack(null, 'experience', 'Michel, wat voor werk ervaring heb je?'),
-                                    builder.CardAction.postBack(null, 'work-smarter', 'Even terug. Je zei iets over slimmer werken. Tell me more!'),
-                                    builder.CardAction.postBack(null, 'contact', 'Ik wil graag met je in contact komen.')
-                                ]
-                            ))
-                );
+                const welcomeMessage = new builder.Message()
+                    .address(message.address)
+                    .text('Mijn naam is Michel Bouman, ik ben 37, heb 4 kids en werk voor Microsoft Nederland. Ik praat graag over digitale transformatie en nieuwe technologien als artificial intelligence, maar ben ook bezig met hoe ik nog slimmer de dag door kom.')
+                    .suggestedActions(
+                        builder.SuggestedActions.create(
+                            null, [
+                                builder.CardAction.postBack(null, 'experience', 'Michel, wat voor werk ervaring heb je?'),
+                                builder.CardAction.postBack(null, 'work-smarter', 'Even terug. Je zei iets over slimmer werken. Tell me more!'),
+                                builder.CardAction.postBack(null, 'contact', 'Ik wil graag met je in contact komen.')
+                            ]
+                        ));
 
+                setTimeout(function () {
+                    bot.send(welcomeMessage);
+                }, 1000);
             }
         });
     }
@@ -153,17 +159,19 @@ bot.dialog('/name', [
         builder.Prompts.text(session, "First things first. My name is Michel Bot. What's your name?");
     },
     (session, args, next) => {
-        console.log(args);
-
         if (args.response) {
             session.userData.name = args.response;
-            session.send('Thanks, love it! Welkom op mn website %s en leuk dat we even samen kunnen babbelen.', session.userData.name);
+            session.endDialog('Thanks, love it! Welcome on my website, %s en leuk dat we even samen kunnen babbelen.', session.userData.name);
+        } else {
+            next();
         }
     }
-]);
+]).triggerAction({
+    matches: [/^onboard/i] // test purposes
+});
 
 // Default Dialog
-bot.dialog('/',
+bot.dialog('/', [
     (session, args, next) => {
         if (session.userData.name !== undefined) {
             session.send('Hey %s! Tof, dat weer terug bent om met me te praten..', session.userData.name);
@@ -172,7 +180,7 @@ bot.dialog('/',
         next();
     },
     (session, args, next) => {
-        if (args.response) {
+        if (args.response !== undefined) {
             session.userData.name = args.response;
             session.send('Thanks, love it! Welkom op mn website %s en leuk dat we even samen kunnen babbelen.', session.userData.name);
         }
@@ -204,14 +212,16 @@ bot.dialog('/',
             }
         }
     }
-).triggerAction({
-    matches: ['Default', 'Greeting']
+]).triggerAction({
+    matches: ['Greeting']
 });
 
 // Joke Dialog (LUIS)
 bot.dialog('/joke', (session) => {
     session.endDialog('Joke');
-}).triggerAction({ matches: ['Joke'] });
+}).triggerAction({
+    matches: ['Joke']
+});
 
 // Unknown Dialog
 bot.dialog('/unknown', (session) => {
