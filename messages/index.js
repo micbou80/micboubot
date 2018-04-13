@@ -77,24 +77,6 @@ bot.use(builder.Middleware.dialogVersion({ version: 1.0, resetCommand: /^reset/i
 bot.use(builder.Middleware.sendTyping());
 bot.use(builder.Middleware.firstRun({ version: 1.0, dialogId: '*:/name' }));
 
-// Custom Middleware
-bot.use({
-    receive: (message, next) => {
-        next();
-    },
-    botbuilder: (session, next) => {
-        // if (session.userData.name !== undefined && session.dialogStack()[0].id !== '*:/name') {
-        //     next();
-        // }
-
-        // session.beginDialog('/name');
-        next();
-    },
-    send: (message, next) => {
-        next();
-    }
-});
-
 //=========================================================
 // Bots Recognizers
 //=========================================================
@@ -166,9 +148,7 @@ bot.dialog('/name', [
             next();
         }
     }
-]).triggerAction({
-    matches: [/^onboard/i] // test purposes
-});
+]);
 
 // Default Dialog
 bot.dialog('/', [
