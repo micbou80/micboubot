@@ -122,7 +122,7 @@ bot.on('conversationUpdate', (message) => {
                     .suggestedActions(
                         builder.SuggestedActions.create(
                             null, [
-                                builder.CardAction.postBack(null, 'experience', 'Work at Microsoft?'),
+                                builder.CardAction.postBack(null, 'experience', 'Work'),
                                 builder.CardAction.postBack(null, 'work-smarter', 'Productivity'),
                                 builder.CardAction.postBack(null, 'contact', 'Get in touch')
                             ]
@@ -179,7 +179,7 @@ bot.dialog('/', [
                     session.beginDialog('/experience');
                     break;
                 case 1:
-                    session.beginDialog('/ebook');
+                    session.beginDialog('/school');
                     break;
                 case 2:
                     session.beginDialog('/work-smarter');
@@ -198,7 +198,7 @@ bot.dialog('/', [
 
 // Joke Dialog (LUIS)
 bot.dialog('/joke', (session) => {
-    session.endDialog('Joke');
+    session.endDialog('Sorry, Michel didnt give me a sense of humor (yet)');
 }).triggerAction({
     matches: ['Joke']
 });
