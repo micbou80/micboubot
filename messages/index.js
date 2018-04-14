@@ -293,7 +293,7 @@ bot.dialog('/work-smarter', [
 
         builder.Prompts.choice(session, 'First of, I always I my frogs in the morning and ofcourse my Inbox is always at Zero.', [
             'Dude!! You eat frogs?',
-            'Tell me more about Inbox Zero?'
+            'Tell me more about Inbox Zero?',
             'I heard you have your own personal assistant?'
         ], { listStyle: builder.ListStyle.button, maxRetries: 2 });
 
