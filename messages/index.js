@@ -118,7 +118,7 @@ bot.on('conversationUpdate', (message) => {
 
                 const welcomeMessage = new builder.Message()
                     .address(message.address)
-                    .text('My name is Michel. I am a proud husband, father and Microsoft employee. I am very much into digital transformation of company and tech like artificial intelligence. Since I decided to go back to school last year, my life is quite full. Therefore, I am also very much into productivity hack.')
+                    .text('My name is Michel. I am a proud husband, father and Microsoft employee. I am very much into digital transformation of company and tech like artificial intelligence. Since I decided to go back to school last year, my life is quite full. Therefore, I am also very much into productivity hack. Ask me something or select one of the buttons below.')
                     .suggestedActions(
                         builder.SuggestedActions.create(
                             null, [
@@ -188,7 +188,7 @@ bot.dialog('/', [
                     session.beginDialog('/contact');
                     break;
                 default:
-                    session.endDialog('dat behoorde niet tot de keuzes, niet valsspelen. Probeer het nog een keer');
+                    session.endDialog('Looks like that wasnt an option to select. Try again.');
             }
         }
     }
@@ -293,7 +293,8 @@ bot.dialog('/work-smarter', [
 
         builder.Prompts.choice(session, 'First of, I always I my frogs in the morning and ofcourse my Inbox is always at Zero.', [
             'Dude!! You eat frogs?',
-            'Tell me more about Inbox Zero?'
+            'Tell me more about Inbox Zero?',
+            'I heard you have a personal assistant?'
         ], { listStyle: builder.ListStyle.button, maxRetries: 2 });
 
     },
@@ -306,6 +307,9 @@ bot.dialog('/work-smarter', [
                     break;
                 case 1:
                     session.beginDialog('/inboxzero');
+                    break;
+                case 2:
+                    session.beginDialog('/calendarhelp');
                     break;
                 default:
                     session.endDialog('Please select one of the options');
@@ -404,21 +408,37 @@ bot.dialog('/msft', [
     }
 ]);
 
+bot.dialog('/calendarhelp', [
+    (session, args, next) => {
+        builder.Prompts.confirm(session, 'Yes and no. Cortana helps me schedule all my meetings. She works with Office365 and Gmail. Want in?');
+    },
+    (session, args, next) => {
+
+        if (args.response == true) {
+            session.endDialog('Alright. Go to http://calendar.help and sign up. It is free and works so smooth')
+
+        } else {
+            session.endDialog('Alright. Well, feel free to scroll through my website. If there is anything I can do for you, please let me know.');
+        }
+    }
+]);
+
 bot.dialog('/later', [
     function (session) {
-        session.endDialog('Ok, dan checken we elkaar snel weer. Als je zin hebt om verder te praten hoor ik het wel.');
+        session.endDialog('Ok. Talk to you soon.');
     }
 ]);
 
 bot.dialog('/frogs', [
     (session, args, next) => {
-        builder.Prompts.confirm(session, 'Haha, kikkers. Natuurlijk is dat maar een uitdrukking, maar ik doe de meest lastige of vervelende taak altijd zo vroeg mogelijk op de dag. Als dat eenmaal achter de rug is, dan is de rest easy-peasy. Snap je?');
+        builder.Prompts.confirm(session, 'Lol, no. It means I do my most annoying to do in the morning. Get it?');
     },
     (session, args, next) => {
         if (args.response == true) {
-            session.endDialog('Ok, probeer het eens zou ik zeggen! Laat me weten als je nog iets anders wilt bespreken.')
+            session.endDialog('Haha, ok. You should try eating a frog in the morning.')
         } else {
-            session.endDialog('No worries, ik zal er binnenkort een blogje over schrijven. Wil je het nog ergens anders over hebben?');
+            session.send('Thats ok. I will make sure I write a blog about it soon.');
+            session.endDialog('Anything else you want to chat about?');
         }
     }
 ]);
