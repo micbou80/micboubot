@@ -254,7 +254,7 @@ bot.dialog('/ebook', [
                     session.beginDialog('/later');
                     break;
                 default:
-                    session.endDialog('dat behoorde niet tot de keuzes, niet valsspelen. Probeer het nog een keer');
+                    session.endDialog('Uh oh, seems like you picked a non-excisting option. Try again');
             }
         }
 
@@ -291,9 +291,10 @@ bot.dialog('/experience', [
 bot.dialog('/work-smarter', [
     (session, args, next) => {
 
-        builder.Prompts.choice(session, 'Ja, dat ken ik! Ik probeer kleine hacks toe te passen. Mijn Inbox is altijd Zero en ik eet mn kikkers in de ochtend.', [
-            'WAT eet je in de ochtned!? Gadver!',
-            'Hoe werkt dat Inbox Zero?'
+        builder.Prompts.choice(session, 'First of, I always I my frogs in the morning and ofcourse my Inbox is always at Zero.', [
+            'Dude!! You eat frogs?',
+            'Tell me more about Inbox Zero?'
+            'I heard you have your own personal assistant?'
         ], { listStyle: builder.ListStyle.button, maxRetries: 2 });
 
     },
@@ -306,6 +307,9 @@ bot.dialog('/work-smarter', [
                     break;
                 case 1:
                     session.beginDialog('/inboxzero');
+                    break;
+                case 2: 
+                    session.beginDialog('/calendarhelp');
                     break;
                 default:
                     session.endDialog('Please select one of the options');
@@ -325,7 +329,7 @@ bot.dialog('/contact', [
 
         builder.Prompts.choice(session, message, [
             'Email',
-            'Calendar'
+            'Meeting'
         ], { listStyle: builder.ListStyle.button, maxRetries: 2 });
     },
     (session, args, next) => {
@@ -396,7 +400,7 @@ bot.dialog('/msft', [
     (session, args, next) => {
 
         if (args.response == true) {
-            session.endDialog('My e-book on digital transformation in SMB is almost done and should be available at the end of the summer. Want to chat about something else?')
+            session.endDialog('My e-book on digital transformation in SMB is almost done and should be available soon. Want to chat about something else?')
 
         } else {
             session.endDialog('Alright. Well, feel free to scroll through my website. If there is anything I can do for you, please let me know.');
@@ -406,19 +410,19 @@ bot.dialog('/msft', [
 
 bot.dialog('/later', [
     function (session) {
-        session.endDialog('Ok, dan checken we elkaar snel weer. Als je zin hebt om verder te praten hoor ik het wel.');
+        session.endDialog('Okido, let me know if you need me.');
     }
 ]);
 
 bot.dialog('/frogs', [
     (session, args, next) => {
-        builder.Prompts.confirm(session, 'Haha, kikkers. Natuurlijk is dat maar een uitdrukking, maar ik doe de meest lastige of vervelende taak altijd zo vroeg mogelijk op de dag. Als dat eenmaal achter de rug is, dan is de rest easy-peasy. Snap je?');
+        builder.Prompts.confirm(session, 'lol, no. But eating your frogs in the morning means doing the most annoying tasks in the morning. Get it?');
     },
     (session, args, next) => {
         if (args.response == true) {
-            session.endDialog('Ok, probeer het eens zou ik zeggen! Laat me weten als je nog iets anders wilt bespreken.')
+            session.endDialog('Cool, you should try it some time.')
         } else {
-            session.endDialog('No worries, ik zal er binnenkort een blogje over schrijven. Wil je het nog ergens anders over hebben?');
+            session.endDialog('No worries, I will write a blog about it one day.');
         }
     }
 ]);
