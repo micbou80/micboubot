@@ -138,7 +138,7 @@ bot.on('conversationUpdate', (message) => {
 
 bot.dialog('/name', [
     (session, args, next) => {
-        builder.Prompts.text(session, "So, I am Michel. What may I call you");
+        builder.Prompts.text(session, "So, whats you name or what may I call you?");
     },
     (session, args, next) => {
         if (args.response) {
@@ -296,7 +296,8 @@ bot.dialog('/work-smarter', [
         builder.Prompts.choice(session, 'First of, I always I my frogs in the morning and ofcourse my Inbox is always at Zero.', [
             'Dude!! You eat frogs?',
             'Tell me more about Inbox Zero?',
-            'I heard you have a personal assistant?'
+            'I heard you have a personal assistant?',
+            'Test (click this and break everything)'
         ], { listStyle: builder.ListStyle.button, maxRetries: 2 });
         
   
@@ -315,6 +316,15 @@ bot.dialog('/work-smarter', [
                 case 2:
                     session.beginDialog('/calendarhelp');
                     break;
+                case 3:
+                    session.send(new builder.Message(session).addAttachment(cards.createVideocard(session)));
+                    function createVideoCard(session) {
+                        return new builder.VideoCard(session)
+                            .media([
+                                { url: 'http://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_320x180.mp4' }
+                             ])
+                            
+                    }
                 default:
                     session.endDialog('Please select one of the options');
             }
@@ -322,6 +332,8 @@ bot.dialog('/work-smarter', [
 
     }
 ]).triggerAction({ matches: 'Productivity' });
+
+
 
 bot.dialog('/contact', [
     (session, args, next) => {
@@ -485,3 +497,4 @@ bot.dialog('/inboxzero', [
         }
     }
 ]);
+
