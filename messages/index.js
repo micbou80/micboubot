@@ -113,20 +113,12 @@ bot.on('conversationUpdate', (message) => {
                 bot.send(
                     new builder.Message()
                         .address(message.address)
-                        .text('Hey! Welcome to my bot. My name is Michel. I am a proud husband, father of 4, student and Microsoft employee.')
+                        .text('Hey! Welcome to my bot. Its still very much under construction. My name is Michel. I am a proud husband, father of 4, student and Microsoft employee.')
                 );
 
                 const welcomeMessage = new builder.Message()
                     .address(message.address)
-                    .text('As you can imagine my life is quite hectic, so I am also very much into productivity hacks. Feel like chatting today?')
-                    .suggestedActions(
-                        builder.SuggestedActions.create(
-                            null, [
-                                builder.CardAction.postBack(null, 'experience', 'Work'),
-                                builder.CardAction.postBack(null, 'work-smarter', 'Productivity'),
-                                builder.CardAction.postBack(null, 'contact', 'Get in touch')
-                            ]
-                        ));
+                    .text('As you can imagine my life is quite hectic, so I am also very much into productivity hacks. Feel like chatting today?');
 
                 setTimeout(function () {
                     bot.send(welcomeMessage);
@@ -198,7 +190,7 @@ bot.dialog('/', [
 
 // Joke Dialog (LUIS)
 bot.dialog('/joke', (session) => {
-    session.endDialog('My dog used to chase people on a bike a lot. It got so bad, finally I had to take his bike away.');
+    session.endDialog('My dog used to chase people on a bike a lot. It got so bad, finally I had to take his bike away. (....) ahum, I know.. my humors need development.');
 }).triggerAction({
     matches: ['Joke']
 });
@@ -317,7 +309,7 @@ bot.dialog('/work-smarter', [
                     session.beginDialog('/calendarhelp');
                     break;
                 case 3:
-                   return createVideoCard(session);
+                   return createHeroCard(session);
                 default:
                     session.endDialog('Please select one of the options');
             }
@@ -326,12 +318,28 @@ bot.dialog('/work-smarter', [
     }
 ]).triggerAction({ matches: 'Productivity' });
 
-function createVideoCard(session) {
-    return new builder.VideoCard(session)
-        .media([
-         { url: 'https://www.youtube.com/watch?v=9tucY7Jhhs4' }
+
+function createHeroCard(session) {
+
+    return new builder.HeroCard(session)
+
+        .title('BotFramework Hero Card')
+
+        .subtitle('Your bots — wherever your users are talking')
+
+        .text('Build and connect intelligent bots to interact with your users naturally wherever they are, from text/sms to Skype, Slack, Office 365 mail and other popular services.')
+
+        .images([
+
+            builder.CardImage.create(session, 'https://sec.ch9.ms/ch9/7ff5/e07cfef0-aa3b-40bb-9baa-7c9ef8ff7ff5/buildreactionbotframework_960.jpg')
+
         ])
-       ;
+
+        .buttons([
+
+            builder.CardAction.openUrl(session, 'https://docs.microsoft.com/bot-framework/', 'Get Started')
+
+        ]);
 
 }
 
