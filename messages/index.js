@@ -118,7 +118,7 @@ bot.on('conversationUpdate', (message) => {
 
                 const welcomeMessage = new builder.Message()
                     .address(message.address)
-                    .text('My name is Michel. I am a proud husband, father and Microsoft employee. I am very much into digital transformation of company and tech like artificial intelligence. Since I decided to go back to school last year, my life is quite full. Therefore, I am also very much into productivity hack. Ask me something or select one of the buttons below.')
+                    .text('My name is Michel. I am a proud husband, father and Microsoft employee. I am very much into the digital transformation of companies and tech like artificial intelligence. Since I decided to go back to school last year, my life is quite full. Therefore, I am also very much into productivity hack. Ask me something or select one of the buttons below.')
                     .suggestedActions(
                         builder.SuggestedActions.create(
                             null, [
@@ -138,7 +138,7 @@ bot.on('conversationUpdate', (message) => {
 
 bot.dialog('/name', [
     (session, args, next) => {
-        builder.Prompts.text(session, "First things first. My name is Michel Bot. What's your name?");
+        builder.Prompts.text(session, "First things first. I am Michel's bot twin. What's your name?");
     },
     (session, args, next) => {
         if (args.response) {
@@ -231,7 +231,7 @@ bot.dialog('/qna', (session, args, next) => {
 
 // Help Dialog
 bot.dialog('/help', (session) => {
-    session.endDialog('Help Dialog');
+    session.endDialog('You can ask me about work, productivity, getting in touch and I am learning new small talk all the time');
 }).triggerAction({ matches: 'Help' });
 
 bot.dialog('/ebook', [
@@ -264,7 +264,7 @@ bot.dialog('/ebook', [
 bot.dialog('/experience', [
     (session, args, next) => {
 
-        builder.Prompts.choice(session, 'I have been working for the Dutch subsidiary of Microsoft since 2012. Before my role at Microsoft I have had sales management roles at Misco Nederland (part of Systemax Ltd.), European Directories and T-Mobile Business. In short; 18 years of work experience of which 12 in management.', [
+        builder.Prompts.choice(session, 'I have been working for the Dutch subsidiary of Microsoft since 2013. Before my role at Microsoft I have had sales- and people management roles at Misco Nederland (part of Systemax Ltd.), European Directories and T-Mobile Business. In short; 18 years of work experience of which 12 years in management.', [
             'What do you do at Microsoft?',
             'I would like to get in touch with you.'
         ], { listStyle: builder.ListStyle.button, maxRetries: 2 });
@@ -403,7 +403,7 @@ bot.dialog('/msft', [
             session.endDialog('My e-book on digital transformation in SMB is almost done and should be available at the end of the summer. Want to chat about something else?')
 
         } else {
-            session.endDialog('Alright. Well, feel free to scroll through my website. If there is anything I can do for you, please let me know.');
+            session.endDialog('Alright. Well, feel free browse through my website. You can use the menu buttons at the top to navigate.');
         }
     }
 ]);
