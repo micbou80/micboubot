@@ -138,12 +138,12 @@ bot.on('conversationUpdate', (message) => {
 
 bot.dialog('/name', [
     (session, args, next) => {
-        builder.Prompts.text(session, "So, whats you name or what may I call you?");
+        builder.Prompts.text(session, "Ok, but first whats your name or what may I call you?");
     },
     (session, args, next) => {
         if (args.response) {
             session.userData.name = args.response;
-            session.endDialog('Thanks, love it! Welcome to the site %s. Lets chat!', session.userData.name);
+            session.endDialog('Welcome to the site %s. Lets chat!', session.userData.name);
         } else {
             next();
         }
@@ -162,13 +162,13 @@ bot.dialog('/', [
     (session, args, next) => {
         if (args.response !== undefined) {
             session.userData.name = args.response;
-            session.send('Thanks, love it! Welcome to the site %s. Lets chat', session.userData.name);
+            session.send('Welcome to the site %s. Lets chat', session.userData.name);
         }
 
         builder.Prompts.choice(session, 'What would you like to talk about?', [
             'Tell me about your work experience',
             'Why did you go back to school?',
-            'I wish I had more time. How do you manage?',
+            'Any productivity tips?',
             'I want to get in touch with you'
         ], { listStyle: builder.ListStyle.button, maxRetries: 2 });
     },
@@ -198,7 +198,7 @@ bot.dialog('/', [
 
 // Joke Dialog (LUIS)
 bot.dialog('/joke', (session) => {
-    session.endDialog('Sorry, Michel didnt give me a sense of humor (yet)');
+    session.endDialog('My dog used to chase people on a bike a lot. It got so bad, finally I had to take his bike away.');
 }).triggerAction({
     matches: ['Joke']
 });
@@ -297,7 +297,7 @@ bot.dialog('/work-smarter', [
             'Dude!! You eat frogs?',
             'Tell me more about Inbox Zero?',
             'I heard you have a personal assistant?',
-            'Test (click this and break everything)'
+            'Test'
         ], { listStyle: builder.ListStyle.button, maxRetries: 2 });
         
   
@@ -317,14 +317,7 @@ bot.dialog('/work-smarter', [
                     session.beginDialog('/calendarhelp');
                     break;
                 case 3:
-                    session.send(new builder.Message(session).addAttachment(cards.createVideocard(session)));
-                    function createVideoCard(session) {
-                        return new builder.VideoCard(session)
-                            .media([
-                                { url: 'http://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_320x180.mp4' }
-                             ])
-                            
-                    }
+                   return createVideoCard(session);
                 default:
                     session.endDialog('Please select one of the options');
             }
@@ -333,7 +326,14 @@ bot.dialog('/work-smarter', [
     }
 ]).triggerAction({ matches: 'Productivity' });
 
+function createVideoCard(session) {
+    return new builder.VideoCard(session)
+        .media([
+         { url: 'https://www.youtube.com/watch?v=9tucY7Jhhs4' }
+        ])
+       ;
 
+}
 
 bot.dialog('/contact', [
     (session, args, next) => {
@@ -497,4 +497,5 @@ bot.dialog('/inboxzero', [
         }
     }
 ]);
+
 
