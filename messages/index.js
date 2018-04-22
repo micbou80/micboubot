@@ -298,7 +298,7 @@ bot.dialog('/work-smarter', [
             'Tell me more about Inbox Zero?',
             'I heard you have a personal assistant?'
         ], { listStyle: builder.ListStyle.button, maxRetries: 2 });
-
+        
   
 
     },
@@ -321,8 +321,7 @@ bot.dialog('/work-smarter', [
         }
 
     }
-    
-]).triggerAction({ matches: 'Productivity' });
+]);
 
 bot.dialog('/contact', [
     (session, args, next) => {
