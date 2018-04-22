@@ -321,7 +321,7 @@ bot.dialog('/work-smarter', [
         }
 
     }
-]);
+]).triggerAction({ matches: 'Productivity' });
 
 bot.dialog('/contact', [
     (session, args, next) => {
