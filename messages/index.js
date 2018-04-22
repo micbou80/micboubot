@@ -415,7 +415,7 @@ bot.dialog('/calendarhelp', [
     (session, args, next) => {
 
         if (args.response == true) {
-            session.endDialog('Alright. Go to http://calendar.help and sign up. It is free and works so smooth')
+            session.endDialog('Alright. Go to http://calendar.help and sign up. It is free (use code CupcakeFrosting to get full access) and works so smooth')
 
         } else {
             session.endDialog('Alright. Well, feel free to scroll through my website. If there is anything I can do for you, please let me know.');
