@@ -474,7 +474,14 @@ bot.dialog('/inboxzero', [
     (session, args, next) => {
 
         session.send('Step 1: Create 3 folders: Action, Wait and Archive');
-        session.send('Step 2: Move all e-mails in current subfolders to your archive (your mailbox its search engine is smart enough -trust me.');
+        session.sendTyping();
+
+        setTimeout(function () {
+        session.send('Step 2...');
+        session.sendTyping();
+
+        setTimeout(function () {
+        session.send('Move all e-mails in current subfolders to your archive (your mailbox its search engine is smart enough -trust me.');
 
         session.sendTyping();
 
@@ -490,11 +497,14 @@ bot.dialog('/inboxzero', [
 
                 setTimeout(function () {
                     builder.Prompts.confirm(session, 'This method has helped me a lot since I started working with it about eight years ago. Now I never lose track of actionable emails and I am not being distracted by all the clutter. Get it?');
-                }, 1000);
+                }, 1250);
 
-            }, 1250);
+            }, 1550);
 
-        }, 1500);
+        }, 1750);
+    },2000);
+},2500);
+    
 
     },
     (session, args, next) => {
