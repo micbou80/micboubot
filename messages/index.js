@@ -203,6 +203,8 @@ bot.dialog('/joke', (session) => {
     matches: ['Joke']
 });
 
+
+
 // Unknown Dialog
 bot.dialog('/unknown', (session) => {
 
@@ -296,7 +298,7 @@ bot.dialog('/work-smarter', [
             'Tell me more about Inbox Zero?',
             'I heard you have a personal assistant?'
         ], { listStyle: builder.ListStyle.button, maxRetries: 2 });
-
+    }).triggerAction({ matches: 'Productivity' });
     },
     (session, args, next) => {
         if (args.response.index !== undefined) {
