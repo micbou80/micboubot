@@ -297,7 +297,7 @@ bot.dialog('/work-smarter', [
             'Dude!! You eat frogs?',
             'Tell me more about Inbox Zero?',
             'I heard you have a personal assistant?',
-            'Test'
+            'Test (and probably break things)'
         ], { listStyle: builder.ListStyle.button, maxRetries: 2 });
         
   
