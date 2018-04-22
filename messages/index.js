@@ -113,12 +113,12 @@ bot.on('conversationUpdate', (message) => {
                 bot.send(
                     new builder.Message()
                         .address(message.address)
-                        .text('Hey! Welcome on my website. Wanna talk?')
+                        .text('Hey! Welcome to my bot. My name is Michel. I am a proud husband, father of 4, student and Microsoft employee.')
                 );
 
                 const welcomeMessage = new builder.Message()
                     .address(message.address)
-                    .text('My name is Michel. I am a proud husband, father and Microsoft employee. I am very much into the digital transformation of companies and tech like artificial intelligence. Since I decided to go back to school last year, my life is quite full. Therefore, I am also very much into productivity hack. Ask me something or select one of the buttons below.')
+                    .text('As you can imagine my life is quite hectic, so I am also very much into productivity hacks. Feel like chatting today?')
                     .suggestedActions(
                         builder.SuggestedActions.create(
                             null, [
@@ -138,7 +138,7 @@ bot.on('conversationUpdate', (message) => {
 
 bot.dialog('/name', [
     (session, args, next) => {
-        builder.Prompts.text(session, "First things first. I am Michel's bot twin. What's your name?");
+        builder.Prompts.text(session, "So, I am Michel. What may I call you");
     },
     (session, args, next) => {
         if (args.response) {
@@ -446,6 +446,8 @@ bot.dialog('/frogs', [
         }
     }
 ]);
+
+
 
 bot.dialog('/inboxzero', [
 
