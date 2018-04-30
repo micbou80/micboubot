@@ -77,8 +77,8 @@ if (is_development) {
 // Anytime the major version is incremented any existing conversations will be restarted.
 bot.use(builder.Middleware.dialogVersion({ version: 1.0, resetCommand: /^reset/i }));
 bot.use(builder.Middleware.sendTyping());
-bot.use(builder.Middleware.firstRun({ version: 1.0, dialogId: '*:/name' }));
 bot.use(AttachmentDetection());
+bot.use(builder.Middleware.firstRun({ version: 1.0, dialogId: '*:/name' }));
 
 //=========================================================
 // Bots Recognizers
