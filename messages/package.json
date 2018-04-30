@@ -5,14 +5,14 @@
   "main": "index.js",
   "dependencies": {
     "applicationinsights": "^1.0.2",
-    "botbuilder": "^3.14.0",
+    "botbuilder": "^3.14.1",
     "botbuilder-azure": "3.0.4",
     "botbuilder-cognitiveservices": "^1.1.0",
-    "nodemailer": "^4.6.0",
+    "nodemailer": "^4.6.4",
     "nodemailer-smtp-transport": "^2.7.4"
   },
   "devDependencies": {
-    "restify": "^6.3.4"
+    "restify": "^7.1.1"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
