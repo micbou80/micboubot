@@ -199,8 +199,7 @@ bot.dialog('/joke', (session) => {
 
 // Unknown Dialog
 bot.dialog('/unknown', (session) => {
-
-    var msg = new builder.Message(session)
+    const msg = new builder.Message(session)
         .text('Uh oh, I think my artificial brain needs some tweaking, because I am not sure what to do now.')
         .suggestedActions(
             builder.SuggestedActions.create(
@@ -230,12 +229,10 @@ bot.dialog('/help', (session) => {
 
 bot.dialog('/ebook', [
     (session, args, next) => {
-
         builder.Prompts.choice(session, 'Wacht even...hoe weet je dat? Het e-book over Digitale Transformation in het MKB moet ergens in Q1 van 2018 uitkomen.', [
             'Hou me op de hoogte!',
             'Ok, dan kom ik later nog wel een keer terug.'
         ], { listStyle: builder.ListStyle.button, maxRetries: 2 });
-
     },
     (session, args, next) => {
         if (args.response.index !== undefined) {
@@ -257,17 +254,14 @@ bot.dialog('/ebook', [
 
 bot.dialog('/experience', [
     (session, args, next) => {
-
         builder.Prompts.choice(session, 'I have been working for the Dutch subsidiary of Microsoft since 2013. Before my role at Microsoft I have had sales- and people management roles at Misco Nederland (part of Systemax Ltd.), European Directories and T-Mobile Business. In short; 18 years of work experience of which 12 years in management.', [
             'What do you do at Microsoft?',
             'I would like to get in touch with you.'
         ], { listStyle: builder.ListStyle.button, maxRetries: 2 });
-
     },
     (session, args, next) => {
         if (args.response.index !== undefined) {
             switch (args.response.index) {
-
                 case 0:
                     session.beginDialog('/msft');
                     break;
@@ -284,21 +278,16 @@ bot.dialog('/experience', [
 
 bot.dialog('/work-smarter', [
     (session, args, next) => {
-
         builder.Prompts.choice(session, 'First of, I always I my frogs in the morning and ofcourse my Inbox is always at Zero.', [
             'Dude!! You eat frogs?',
             'Tell me more about Inbox Zero?',
             'I heard you have a personal assistant?',
             'Test (and probably break things)'
         ], { listStyle: builder.ListStyle.button, maxRetries: 2 });
-        
-  
-
     },
     (session, args, next) => {
         if (args.response.index !== undefined) {
             switch (args.response.index) {
-
                 case 0:
                     session.beginDialog('/frogs');
                     break;
@@ -309,7 +298,7 @@ bot.dialog('/work-smarter', [
                     session.beginDialog('/calendarhelp');
                     break;
                 case 3:
-                   return createHeroCard(session);
+                    return createHeroCard(session);
                 default:
                     session.endDialog('Please select one of the options');
             }
@@ -317,31 +306,6 @@ bot.dialog('/work-smarter', [
 
     }
 ]).triggerAction({ matches: 'Productivity' });
-
-
-function createHeroCard(session) {
-
-    return new builder.HeroCard(session)
-
-        .title('BotFramework Hero Card')
-
-        .subtitle('Your bots — wherever your users are talking')
-
-        .text('Build and connect intelligent bots to interact with your users naturally wherever they are, from text/sms to Skype, Slack, Office 365 mail and other popular services.')
-
-        .images([
-
-            builder.CardImage.create(session, 'https://sec.ch9.ms/ch9/7ff5/e07cfef0-aa3b-40bb-9baa-7c9ef8ff7ff5/buildreactionbotframework_960.jpg')
-
-        ])
-
-        .buttons([
-
-            builder.CardAction.openUrl(session, 'https://docs.microsoft.com/bot-framework/', 'Get Started')
-
-        ]);
-
-}
 
 bot.dialog('/contact', [
     (session, args, next) => {
@@ -382,7 +346,7 @@ bot.dialog('/contact', [
                 secure: false, // use TLS
                 auth: {
                     user: 'bot@michelbouman.nl',
-                    pass: 'micboubot'
+                    pass: process.env.EmailPassword
                 },
                 tls: {
                     rejectUnauthorized: false // do not fail on invalid certs
@@ -391,9 +355,7 @@ bot.dialog('/contact', [
 
             transporter.verify((error, success) => {
                 if (error) {
-                    console.log(error);
-                } else {
-                    console.log('Server is ready to take our messages');
+                    session.error(error);
                 }
             });
 
@@ -411,7 +373,6 @@ bot.dialog('/contact', [
                     session.endDialog('Thanks' + session.userData.name + ', your message was sent to my inbox and I will reply as soon as possible. Let me know if you want to chat about something else.');
                 };
             });
-
         }
 
     }
@@ -422,7 +383,6 @@ bot.dialog('/msft', [
         builder.Prompts.confirm(session, 'I am a Territory Channel Manager with a focus on the modern workplace, data and artifical intelligence (like this bot). My role is all about enabling digital transformation for businesses in the SMB space with Microsoft partners. Would you like to read more about digital transformation  in SMB?');
     },
     (session, args, next) => {
-
         if (args.response == true) {
             session.endDialog('My e-book on digital transformation in SMB is almost done and should be available at the end of the summer. Want to chat about something else?')
 
@@ -467,45 +427,38 @@ bot.dialog('/frogs', [
     }
 ]);
 
-
-
 bot.dialog('/inboxzero', [
 
     (session, args, next) => {
-
         session.send('Step 1: Create 3 folders: Action, Wait and Archive');
         session.sendTyping();
 
         setTimeout(function () {
-        session.send('Step 2...');
-        session.sendTyping();
-
-        setTimeout(function () {
-        session.send('Move all e-mails in current subfolders to your archive (your mailbox its search engine is smart enough -trust me.');
-
-        session.sendTyping();
-
-        setTimeout(function () {
-
-            session.send('Step 3: Start going through your inbox and move action items to the action folder and all other mail to archive');
-
+            session.send('Step 2...');
             session.sendTyping();
 
             setTimeout(function () {
-                session.send('Step 4: Set times in your agenda to work on your action folder and to bring your inbox to zero.');
-                session.send('Emails that need following up from someone else are moved to the wait folder. I check my action folder once a day and my wait twice a week');
+                session.send('Move all e-mails in current subfolders to your archive (your mailbox its search engine is smart enough -trust me.');
+                session.sendTyping();
 
                 setTimeout(function () {
-                    builder.Prompts.confirm(session, 'This method has helped me a lot since I started working with it about eight years ago. Now I never lose track of actionable emails and I am not being distracted by all the clutter. Get it?');
-                }, 1250);
 
-            }, 1550);
+                    session.send('Step 3: Start going through your inbox and move action items to the action folder and all other mail to archive');
+                    session.sendTyping();
 
-        }, 1750);
-    },2000);
-},2500);
-    
+                    setTimeout(function () {
+                        session.send('Step 4: Set times in your agenda to work on your action folder and to bring your inbox to zero.');
+                        session.send('Emails that need following up from someone else are moved to the wait folder. I check my action folder once a day and my wait twice a week');
 
+                        setTimeout(function () {
+                            builder.Prompts.confirm(session, 'This method has helped me a lot since I started working with it about eight years ago. Now I never lose track of actionable emails and I am not being distracted by all the clutter. Get it?');
+                        }, 1250);
+
+                    }, 1550);
+
+                }, 1750);
+            }, 2000);
+        }, 2500);
     },
     (session, args, next) => {
         if (args.response == true) {
@@ -515,5 +468,3 @@ bot.dialog('/inboxzero', [
         }
     }
 ]);
-
-
