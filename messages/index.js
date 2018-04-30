@@ -11,6 +11,8 @@ const botbuilder_azure = require("botbuilder-azure");
 const builder_cognitiveservices = require("botbuilder-cognitiveservices")
 const path = require('path');
 
+const AttachmentDetection = require('./middleware/image-middleware').AttachmentDetection;
+
 // Configure Application Insights
 if (process.env.APPINSIGHTS_INSTRUMENTATIONKEY) {
     const AppInsights = require('applicationinsights');
@@ -76,6 +78,7 @@ if (is_development) {
 bot.use(builder.Middleware.dialogVersion({ version: 1.0, resetCommand: /^reset/i }));
 bot.use(builder.Middleware.sendTyping());
 bot.use(builder.Middleware.firstRun({ version: 1.0, dialogId: '*:/name' }));
+bot.use(AttachmentDetection());
 
 //=========================================================
 // Bots Recognizers
@@ -408,7 +411,7 @@ bot.dialog('/calendarhelp', [
 ]);
 
 bot.dialog('/later', [
-    function (session) {
+    (session) => {
         session.endDialog('Ok. Talk to you soon.');
     }
 ]);
@@ -466,5 +469,14 @@ bot.dialog('/inboxzero', [
         } else {
             session.endDialog('No worries, I have a blog coming up on the topic. Want to chat about something else?');
         }
+    }
+]);
+
+bot.dialog('/image-received', [
+    (session, args, next) => {
+        const attachment = args.attachment;
+        console.log(attachment);
+
+        session.endDialog('(not yet implemented)');
     }
 ]);
