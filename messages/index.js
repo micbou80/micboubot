@@ -301,7 +301,8 @@ bot.dialog('/work-smarter', [
                     session.beginDialog('/calendarhelp');
                     break;
                 case 3:
-                    return createHeroCard(session);
+                    session.beginDialog('/video');
+                    break;
                 default:
                     session.endDialog('Please select one of the options');
             }
@@ -400,10 +401,8 @@ bot.dialog('/calendarhelp', [
         builder.Prompts.confirm(session, 'Yes and no. Cortana helps me schedule all my meetings. She works with Office365 and Gmail. Want in?');
     },
     (session, args, next) => {
-
         if (args.response == true) {
             session.endDialog('Alright. Go to http://calendar.help and sign up. It is free (use code CupcakeFrosting to get full access) and works so smooth')
-
         } else {
             session.endDialog('Alright. Well, feel free to scroll through my website. If there is anything I can do for you, please let me know.');
         }
@@ -469,6 +468,14 @@ bot.dialog('/inboxzero', [
         } else {
             session.endDialog('No worries, I have a blog coming up on the topic. Want to chat about something else?');
         }
+    }
+]);
+
+bot.dialog('/video', [
+    (session, args, next) => {
+
+        
+        session.endDialog('');
     }
 ]);
 
