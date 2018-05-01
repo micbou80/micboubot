@@ -475,7 +475,7 @@ bot.dialog('/video', [
             .title('The animated guide to artificial intelligence')
             .subtitle('(Explanimators: Episode 1)')
             .text('An easy guide to everything AI. More from Microsoft Story Labs: microsoft.com/storylabs.')
-            .image(builder.CardImage.create(session, 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Big_buck_bunny_poster_big.jpg/220px-Big_buck_bunny_poster_big.jpg'))
+            .image(builder.CardImage.create(session, 'https://www.coolermedia.nl/wp-content/uploads/2017/08/4nsilupnry0.jpg'))
             .media([
                 { url: 'https://www.youtube.com/watch?v=4NsilUpnRY0&t=2s' }
             ])
