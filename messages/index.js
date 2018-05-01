@@ -319,12 +319,12 @@ bot.dialog('/contact', [
 
         builder.Prompts.choice(session, message, [
             'Email',
-            'Calendar'
+            'Schedule 15 minutes'
         ], { listStyle: builder.ListStyle.button, maxRetries: 2 });
     },
     (session, args, next) => {
-        if (args.response.entity == 'Calendar') {
-            session.beginDialog('/15min');
+        if (args.response.entity == 'Schedule 15 minutes') {
+            session.replaceDialog('/15min');
             return;
         }
         builder.Prompts.text(session, 'Let me take care of that. What is your e-mail address?')
@@ -494,12 +494,12 @@ bot.dialog('/15min', [
         const card = new builder.HeroCard(session)
             .title('Feel free to book your own 15 minute meeting with me')
             .subtitle('(Powered by Microsoft Bookings)')
-            .text('An easy guide to everything AI. More from Microsoft Story Labs: microsoft.com/storylabs.')
+            .text('I use Microsoft Booking. It simplifies how customers schedule and manage appointments. Customers love the flexibility, convenience, and control they get with Bookings. They can visit your booking page whenever they want, book the time and service they need, get a confirmation email and calendar invitation, and reschedule or cancel if they must. For customers who prefer to book by calling you, simply enter their appointment details and Bookings sends all confirmations and reminders.')
             .images([
                 builder.CardImage.create(session, 'http://www.michelbouman.nl/calendar.png')
             ])
             .buttons([
-                builder.CardAction.openUrl(session, 'https://www.microsoft.com/en-us/ai/', 'Learn More')
+                builder.CardAction.openUrl(session, 'http://aka.ms/meetmichel', 'Schedule now')
             ]);
 
         const msg = new builder.Message(session).addAttachment(card);
