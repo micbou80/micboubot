@@ -494,7 +494,7 @@ bot.dialog('/15min', [
         const card = new builder.HeroCard(session)
             .title('Schedule a 15-minute meeting with me')
             .subtitle('(Powered by Microsoft Bookings)')
-            .text('I use Microsoft Bookings for this. It simplifies how customers schedule and manage appointments. Customers love the flexibility, convenience, and control they get with Bookings. They can visit your booking page whenever they want, book the time and service they need, get a confirmation email and calendar invitation, and reschedule or cancel if they must. For customers who prefer to book by calling you, simply enter their appointment details and Bookings sends all confirmations and reminders.')
+            .text('I use Microsoft Bookings for this. It simplifies how customers schedule and manage appointments. Customers love the flexibility, convenience, and control they get with Bookings. They can visit your booking page whenever they want, book the time and service they need, get a confirmation email and calendar invitation, and reschedule or cancel if they must. Try it for yourself with my calendar.')
             .images([
                 builder.CardImage.create(session, 'http://www.michelbouman.nl/calendar.png')
             ])
