@@ -324,7 +324,7 @@ bot.dialog('/contact', [
     },
     (session, args, next) => {
         if (args.response.entity == 'Calendar') {
-            session.endDialog('Cool stuff, you can go to http://aka.ms/meetmichel to schedule.');
+            session.beginDialog('/15min');
             return;
         }
         builder.Prompts.text(session, 'Let me take care of that. What is your e-mail address?')
@@ -478,6 +478,25 @@ bot.dialog('/video', [
             .image(builder.CardImage.create(session, 'https://www.coolermedia.nl/wp-content/uploads/2017/08/4nsilupnry0.jpg'))
             .media([
                 { url: 'https://www.youtube.com/watch?v=4NsilUpnRY0&t=2s' }
+            ])
+            .buttons([
+                builder.CardAction.openUrl(session, 'https://www.microsoft.com/en-us/ai/', 'Learn More')
+            ]);
+
+        const msg = new builder.Message(session).addAttachment(card);
+
+        session.endDialog(msg);
+    }
+]);
+
+bot.dialog('/15min', [
+    (session, args, next) => {
+        const card = new builder.HeroCard(session)
+            .title('Feel free to book your own 15 minute meeting with me')
+            .subtitle('(Powered by Microsoft Bookings)')
+            .text('An easy guide to everything AI. More from Microsoft Story Labs: microsoft.com/storylabs.')
+            .images([
+                builder.CardImage.create(session, 'https://www.michelbouman.nl/calendar.png')
             ])
             .buttons([
                 builder.CardAction.openUrl(session, 'https://www.microsoft.com/en-us/ai/', 'Learn More')
