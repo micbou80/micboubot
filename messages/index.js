@@ -64,8 +64,6 @@ if (is_development) {
     server.listen(process.env.PORT || 3978, () => {
         console.log(`Bot Framework listening to ${server.url}`);
     });
-
-    server.post('/api/messages', connector.listen());
 } else {
     module.exports = connector.listen();
 }
@@ -473,9 +471,21 @@ bot.dialog('/inboxzero', [
 
 bot.dialog('/video', [
     (session, args, next) => {
+        const card = new builder.VideoCard(session)
+            .title('Big Buck Bunny')
+            .subtitle('by the Blender Institute')
+            .text('Big Buck Bunny (code-named Peach) is a short computer-animated comedy film by the Blender Institute, part of the Blender Foundation. Like the foundation\'s previous film Elephants Dream, the film was made using Blender, a free software application for animation made by the same foundation. It was released as an open-source film under Creative Commons License Attribution 3.0.')
+            .image(builder.CardImage.create(session, 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Big_buck_bunny_poster_big.jpg/220px-Big_buck_bunny_poster_big.jpg'))
+            .media([
+                { url: 'http://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_320x180.mp4' }
+            ])
+            .buttons([
+                builder.CardAction.openUrl(session, 'https://peach.blender.org/', 'Learn More')
+            ]);
 
-        
-        session.endDialog('');
+        const msg = new builder.Message(session).addAttachment(card);
+
+        session.endDialog(msg);
     }
 ]);
 
