@@ -496,7 +496,7 @@ bot.dialog('/15min', [
             .subtitle('(Powered by Microsoft Bookings)')
             .text('An easy guide to everything AI. More from Microsoft Story Labs: microsoft.com/storylabs.')
             .images([
-                builder.CardImage.create(session, 'https://www.michelbouman.nl/calendar.png')
+                builder.CardImage.create(session, 'http://www.michelbouman.nl/calendar.png')
             ])
             .buttons([
                 builder.CardAction.openUrl(session, 'https://www.microsoft.com/en-us/ai/', 'Learn More')
