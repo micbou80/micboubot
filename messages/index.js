@@ -382,15 +382,25 @@ bot.dialog('/contact', [
 
 bot.dialog('/msft', [
     (session, args, next) => {
-        builder.Prompts.confirm(session, 'I am a Territory Channel Manager with a focus on the modern workplace, data and artifical intelligence (like this bot). My role is all about enabling digital transformation for businesses in the SMB space with Microsoft partners. Would you like to read more about digital transformation  in SMB?');
+        builder.Prompts.choice(session, 'As a Territory Channel Manager my role sits right in between our customers and our partners. My focus is on the Modern Workplace and on Artificial Intelligence', [
+            'A.I.? Isnt that something thats only seen in Sci-fi movies?',
+            'I would like to get in touch with you.'
+        ], { listStyle: builder.ListStyle.button, maxRetries: 2 });
     },
     (session, args, next) => {
-        if (args.response == true) {
-            session.endDialog('My e-book on digital transformation in SMB is almost done and should be available at the end of the summer. Want to chat about something else?')
-
-        } else {
-            session.endDialog('Alright. Well, feel free browse through my website. You can use the menu buttons at the top to navigate.');
+        if (args.response.index !== undefined) {
+            switch (args.response.index) {
+                case 0:
+                    session.beginDialog('/ai');
+                    break;
+                case 1:
+                    session.beginDialog('/contact');
+                    break;
+                default:
+                    session.endDialog('Please select one of the options');
+            }
         }
+
     }
 ]);
 
@@ -469,12 +479,12 @@ bot.dialog('/inboxzero', [
     }
 ]);
 
-bot.dialog('/video', [
+bot.dialog('/ai', [
     (session, args, next) => {
         const card = new builder.VideoCard(session)
             .title('The animated guide to artificial intelligence')
             .subtitle('(Explanimators: Episode 1)')
-            .text('An easy guide to everything AI. More from Microsoft Story Labs: microsoft.com/storylabs.')
+            .text('Watch this easy guide to everything AI. Its from Microsoft Story Labs...')
             .image(builder.CardImage.create(session, 'https://www.coolermedia.nl/wp-content/uploads/2017/08/4nsilupnry0.jpg'))
             .media([
                 { url: 'https://www.youtube.com/watch?v=4NsilUpnRY0&t=2s' }
