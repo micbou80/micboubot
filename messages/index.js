@@ -383,7 +383,7 @@ bot.dialog('/contact', [
 bot.dialog('/msft', [
     (session, args, next) => {
         builder.Prompts.choice(session, 'As a Territory Channel Manager my role sits right in between our customers and our partners. My focus is on the Modern Workplace and on Artificial Intelligence', [
-            'A.I.? Isnt that something thats only seen in Sci-fi movies?',
+            'A.I. from the Sci-fi movies?',
             'I would like to get in touch with you.'
         ], { listStyle: builder.ListStyle.button, maxRetries: 2 });
     },
@@ -487,7 +487,7 @@ bot.dialog('/ai', [
             .text('Watch this easy guide to everything AI. Its from Microsoft Story Labs...')
             .image(builder.CardImage.create(session, 'https://www.coolermedia.nl/wp-content/uploads/2017/08/4nsilupnry0.jpg'))
             .media([
-                { url: 'https://www.youtube.com/watch?v=4NsilUpnRY0&t=2s' }
+                { url: 'https://www.youtube.com/watch?v=4NsilUpnRY0&t=2s?autoplay=1' }
             ])
             .buttons([
                 builder.CardAction.openUrl(session, 'https://www.microsoft.com/en-us/ai/', 'Learn More')
