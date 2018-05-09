@@ -100,8 +100,6 @@ const qna_recognizer = new builder_cognitiveservices.QnAMakerRecognizer({
 
 bot.recognizer(qna_recognizer);
 
-//@TODO TypingActivity in conversationUpdate
-//@TODO fix delay in conversationUpdate
 //@TODO Cognitive services toevoegen
 
 //=========================================================
@@ -119,8 +117,9 @@ bot.on('conversationUpdate', (message) => {
                     new builder.Message()
                         .address(message.address)
                         .text('Hey! Welcome to my bot. Its still very much under construction..')
-                        
-                );                            
+                );
+
+                bot.send({ type: 'typing', address: message.address });
 
                 const welcomeMessage = new builder.Message()
                     .address(message.address)
@@ -130,16 +129,23 @@ bot.on('conversationUpdate', (message) => {
                     .address(message.address)
                     .text('As you can imagine my life is quite hectic, so I am also very much into productivity hacks. Feel like chatting today?');
 
-                    const welcomeMessage3 = new builder.Message()
+                const welcomeMessage3 = new builder.Message()
                     .address(message.address)
                     .text('Feel like chatting today?');
 
-                    
-                setTimeout(function () {
+                setTimeout(() => {
                     bot.send(welcomeMessage);
-                    bot.send(welcomeMessage2);
-                    bot.send(welcomeMessage3);
-                }, 1000);
+                    bot.send({ type: 'typing', address: message.address });
+
+                    setTimeout(() => {
+                        bot.send(welcomeMessage2);
+                        bot.send({ type: 'typing', address: message.address });
+
+                        setTimeout(() => {
+                            bot.send(welcomeMessage3);
+                        }, 1000)
+                    }, 1000)
+                }, 1000)
             }
         });
     }
