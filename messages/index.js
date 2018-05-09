@@ -100,6 +100,9 @@ const qna_recognizer = new builder_cognitiveservices.QnAMakerRecognizer({
 
 bot.recognizer(qna_recognizer);
 
+//@TODO TypingActivity in conversationUpdate
+//@TODO Cognitive services toevoegen
+
 //=========================================================
 // Bots Dialogs
 //=========================================================
@@ -116,11 +119,14 @@ bot.on('conversationUpdate', (message) => {
                         .address(message.address)
                         .text('Hey! Welcome to my bot. Its still very much under construction. My name is Michel. I am a proud husband, father of 4, student and Microsoft employee.')
                 );
+                            
 
                 const welcomeMessage = new builder.Message()
                     .address(message.address)
                     .text('As you can imagine my life is quite hectic, so I am also very much into productivity hacks. Feel like chatting today?');
 
+
+                    
                 setTimeout(function () {
                     bot.send(welcomeMessage);
                 }, 1000);
