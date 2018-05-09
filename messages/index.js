@@ -101,6 +101,7 @@ const qna_recognizer = new builder_cognitiveservices.QnAMakerRecognizer({
 bot.recognizer(qna_recognizer);
 
 //@TODO TypingActivity in conversationUpdate
+//@TODO fix delay in conversationUpdate
 //@TODO Cognitive services toevoegen
 
 //=========================================================
@@ -117,18 +118,27 @@ bot.on('conversationUpdate', (message) => {
                 bot.send(
                     new builder.Message()
                         .address(message.address)
-                        .text('Hey! Welcome to my bot. Its still very much under construction. My name is Michel. I am a proud husband, father of 4, student and Microsoft employee.')
-                );
-                            
+                        .text('Hey! Welcome to my bot. Its still very much under construction..')
+                        
+                );                            
 
                 const welcomeMessage = new builder.Message()
                     .address(message.address)
+                    .text('My name is Michel. I am a proud husband, father of 4, student and Microsoft employee.');
+
+                const welcomeMessage2 = new builder.Message()
+                    .address(message.address)
                     .text('As you can imagine my life is quite hectic, so I am also very much into productivity hacks. Feel like chatting today?');
 
+                    const welcomeMessage3 = new builder.Message()
+                    .address(message.address)
+                    .text('Feel like chatting today?');
 
                     
                 setTimeout(function () {
                     bot.send(welcomeMessage);
+                    bot.send(welcomeMessage2);
+                    bot.send(welcomeMessage3);
                 }, 1000);
             }
         });
