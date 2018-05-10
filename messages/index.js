@@ -100,8 +100,10 @@ const qna_recognizer = new builder_cognitiveservices.QnAMakerRecognizer({
 
 bot.recognizer(qna_recognizer);
 
-//@TODO Cognitive services toevoegen
 //@TODO Overrule LUIS bij Modern Workplace (Experience > MSFT > MW)
+//@TODO Add Project Peronality Chat
+//@TODO Cognitive services toevoegen
+
 
 //=========================================================
 // Bots Dialogs
@@ -289,9 +291,10 @@ bot.dialog('/work-smarter', [
     (session, args, next) => {
         builder.Prompts.choice(session, 'First of, I always I my frogs in the morning and ofcourse my Inbox is always at Zero.', [
             'Dude!! You eat frogs?',
-            'Tell me more about Inbox Zero?',
+            'Tell me more about Inbox Zero!',
             'I heard you have a personal assistant?',
-            ], { listStyle: builder.ListStyle.button, maxRetries: 2 });
+            
+        ], { listStyle: builder.ListStyle.button, maxRetries: 2 });
     },
     (session, args, next) => {
         if (args.response.index !== undefined) {
@@ -388,7 +391,7 @@ bot.dialog('/msft', [
     (session, args, next) => {
         builder.Prompts.choice(session, 'As a Territory Channel Manager my role sits right in between our customers and our partners. My focus is on the Modern Workplace and on Artificial Intelligence', [
             'A.I. from the Sci-fi movies?',
-            'Whats a modern workplace?',
+            'Whats a modern place?',
             'I would like to get in touch with you.'
         ], { listStyle: builder.ListStyle.button, maxRetries: 2 });
     },
@@ -485,7 +488,7 @@ bot.dialog('/inboxzero', [
                                         session.sendTyping();
 
                                         setTimeout(function () {
-                                            builder.Prompts.confirm(session, 'Get it?');
+                                            builder.Prompts.confirm(session, 'Get it? I have a blog (in Dutch) care to read it?');
                                         }, 1000);
                                  
                                     }, 3000);
@@ -507,10 +510,30 @@ bot.dialog('/inboxzero', [
 },
     (session, args, next) => {
         if (args.response == true) {
-            session.endDialog('Nice, I wonder how it works for you! Let me know if you want to discuss something else.')
-        } else {
-            session.endDialog('No worries, I have a blog coming up on the topic. Want to chat about something else?');
+            session.beginDialog('/0blog');
+            } else {
+            session.endDialog('Ok.Let me know if you want to discuss something else.')
+            
         }
+    }
+]);
+
+bot.dialog('/0blog', [
+    (session, args, next) => {
+        const card = new builder.HeroCard(session)
+            .title('Met ‘Inbox Zero’ altijd een lege mailbox')
+            .subtitle('(View on Microsoft Pulse blogsite)')
+            .text('Een lege, opgeruimde en overzichtelijke mailbox. Wie wil dat niet? Klaar met al die ongelezen- en to-do mails die maar in m’n inbox bleven hangen en alle energie die het soms kostte om te achterhalen of die ene collega gereageerd had. Bij de zoektocht kwam ik de ‘Inbox Zero’ methode van Merlin Mann tegen. Deze methode is een handzame manier om je inbox zo in te richten, dat deze niet alleen leeg is, maar waarbij je ook een duidelijk overzicht hebt van welke openstaande acties er in je mailbox zitten en op welke e-mails jij nog antwoord moet krijgen.')
+            .images([
+                builder.CardImage.create(session, 'http://www.michelbouman.nl/inboxzeroblog.png')
+            ])
+            .buttons([
+                builder.CardAction.openUrl(session, 'https://pulse.microsoft.com/nl-nl/work-productivity-nl-nl/na/met-inbox-zero-altijd-een-lege-mailbox/', 'Read the blog')
+            ]);
+
+        const msg = new builder.Message(session).addAttachment(card);
+
+        session.endDialog(msg);
     }
 ]);
 
