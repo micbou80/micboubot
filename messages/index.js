@@ -388,6 +388,7 @@ bot.dialog('/msft', [
     (session, args, next) => {
         builder.Prompts.choice(session, 'As a Territory Channel Manager my role sits right in between our customers and our partners. My focus is on the Modern Workplace and on Artificial Intelligence', [
             'A.I. from the Sci-fi movies?',
+            'Whats a modern workplace?',
             'I would like to get in touch with you.'
         ], { listStyle: builder.ListStyle.button, maxRetries: 2 });
     },
@@ -399,6 +400,9 @@ bot.dialog('/msft', [
                     break;
                 case 1:
                     session.beginDialog('/contact');
+                    break;
+                case 2:
+                    session.beginDialog('/modernworkplace');
                     break;
                 default:
                     session.endDialog('Please select one of the options');
@@ -414,7 +418,7 @@ bot.dialog('/calendarhelp', [
     },
     (session, args, next) => {
         if (args.response == true) {
-            session.endDialog('Alright. Go to http://calendar.help and sign up. It is free (use code CupcakeFrosting to get full access) and works so smooth')
+            session.endDialog('Alright. Go to http://calendar.help and sign up. It is free (use code CupcakeFrosting to get full access)')
         } else {
             session.endDialog('Alright. Well, feel free to scroll through my website. If there is anything I can do for you, please let me know.');
         }
@@ -495,6 +499,28 @@ bot.dialog('/ai', [
             ])
             .buttons([
                 builder.CardAction.openUrl(session, 'https://www.microsoft.com/en-us/ai/', 'Learn More')
+            ]);
+
+        const msg = new builder.Message(session).addAttachment(card);
+
+        session.endDialog(msg);
+    }
+]);
+
+
+
+bot.dialog('/modernworkplace', [
+    (session, args, next) => {
+        const card = new builder.VideoCard(session)
+            .title('Modern Workplace')
+            .subtitle('(Explanimators: Episode 1)')
+            .text('To me, the modern workplace is a workplace that empowers everyone to be creative and work together, securely. So being able to get more done, work better together while safeguarding your data')
+            .image(builder.CardImage.create(session, 'https://www.coolermedia.nl/wp-content/uploads/2017/08/4nsilupnry0.jpg'))
+            .media([
+                { url: 'https://www.youtube.com/watch?v=rW-r86Yj1W4' }
+            ])
+            .buttons([
+                builder.CardAction.openUrl(session, 'https://resources.office.com/en-us-landing-DemoIntroducingMicrosoft365Business.html', 'Check out the demo')
             ]);
 
         const msg = new builder.Message(session).addAttachment(card);
