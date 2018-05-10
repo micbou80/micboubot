@@ -127,7 +127,7 @@ bot.on('conversationUpdate', (message) => {
 
                 const welcomeMessage2 = new builder.Message()
                     .address(message.address)
-                    .text('As you can imagine my life is quite hectic, so I am also very much into productivity hacks. Feel like chatting today?');
+                    .text('As you can imagine my life is quite hectic, so I am also very much into productivity hacks.');
 
                 const welcomeMessage3 = new builder.Message()
                     .address(message.address)
@@ -143,9 +143,9 @@ bot.on('conversationUpdate', (message) => {
 
                         setTimeout(() => {
                             bot.send(welcomeMessage3);
-                        }, 1000)
-                    }, 1000)
-                }, 1000)
+                        }, 2000)
+                    }, 2000)
+                }, 2000)
             }
         });
     }
@@ -182,7 +182,7 @@ bot.dialog('/', [
 
         builder.Prompts.choice(session, 'What would you like to talk about?', [
             'Tell me about your work experience',
-            'Why did you go back to school?',
+            'Lets play a game',
             'Any productivity tips?',
             'I want to get in touch with you'
         ], { listStyle: builder.ListStyle.button, maxRetries: 2 });
@@ -194,7 +194,7 @@ bot.dialog('/', [
                     session.beginDialog('/experience');
                     break;
                 case 1:
-                    session.beginDialog('/school');
+                    session.beginDialog('/game');
                     break;
                 case 2:
                     session.beginDialog('/work-smarter');
@@ -250,30 +250,12 @@ bot.dialog('/help', (session) => {
     session.endDialog('You can ask me about work, productivity, getting in touch and I am learning new small talk all the time');
 }).triggerAction({ matches: 'Help' });
 
-bot.dialog('/ebook', [
-    (session, args, next) => {
-        builder.Prompts.choice(session, 'Wacht even...hoe weet je dat? Het e-book over Digitale Transformation in het MKB moet ergens in Q1 van 2018 uitkomen.', [
-            'Hou me op de hoogte!',
-            'Ok, dan kom ik later nog wel een keer terug.'
-        ], { listStyle: builder.ListStyle.button, maxRetries: 2 });
-    },
-    (session, args, next) => {
-        if (args.response.index !== undefined) {
-            switch (args.response.index) {
+// Cognitive Services Game
+bot.dialog('/game', (session) => {
+    session.endDialog('This part is under construction, but soon I will be showing of my cognitive skills');
+}).triggerAction({ matches: 'Game' });
 
-                case 0:
-                    session.beginDialog('/contact');
-                    break;
-                case 1:
-                    session.beginDialog('/later');
-                    break;
-                default:
-                    session.endDialog('Uh oh, seems like you picked a non-excisting option. Try again');
-            }
-        }
 
-    }
-]);
 
 bot.dialog('/experience', [
     (session, args, next) => {
@@ -424,7 +406,7 @@ bot.dialog('/msft', [
         }
 
     }
-]);
+]).triggerAction({ matches: 'Work' });
 
 bot.dialog('/calendarhelp', [
     (session, args, next) => {
