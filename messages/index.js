@@ -101,6 +101,7 @@ const qna_recognizer = new builder_cognitiveservices.QnAMakerRecognizer({
 bot.recognizer(qna_recognizer);
 
 //@TODO Cognitive services toevoegen
+//@TODO Overrule LUIS bij Modern Workplace (Experience > MSFT > MW)
 
 //=========================================================
 // Bots Dialogs
@@ -178,11 +179,14 @@ bot.dialog('/', [
         if (args.response !== undefined) {
             session.userData.name = args.response;
             session.send('Welcome to the site %s. Lets chat', session.userData.name);
+            next();
         }
+        
+        
 
         builder.Prompts.choice(session, 'What would you like to talk about?', [
             'Tell me about your work experience',
-            'Lets play a game',
+            'Lets play a game (under construction)',
             'Any productivity tips?',
             'I want to get in touch with you'
         ], { listStyle: builder.ListStyle.button, maxRetries: 2 });
@@ -301,9 +305,6 @@ bot.dialog('/work-smarter', [
                     break;
                 case 2:
                     session.beginDialog('/calendarhelp');
-                    break;
-                case 3:
-                    session.beginDialog('/video');
                     break;
                 default:
                     session.endDialog('Please select one of the options');
@@ -433,7 +434,7 @@ bot.dialog('/later', [
 
 bot.dialog('/frogs', [
     (session, args, next) => {
-        builder.Prompts.confirm(session, 'Lol, no. It means I do my most annoying to do in the morning. Get it?');
+        builder.Prompts.confirm(session, 'Lol, no. It means I complete my energy drainers in the morning. Get it?');
     },
     (session, args, next) => {
         if (args.response == true) {
@@ -458,26 +459,53 @@ bot.dialog('/inboxzero', [
             setTimeout(function () {
                 session.send('Move all e-mails in current subfolders to your archive (your mailbox its search engine is smart enough -trust me.');
                 session.sendTyping();
-
+            
                 setTimeout(function () {
-
-                    session.send('Step 3: Start going through your inbox and move action items to the action folder and all other mail to archive');
+                    session.send('Step 3...');
                     session.sendTyping();
 
                     setTimeout(function () {
-                        session.send('Step 4: Set times in your agenda to work on your action folder and to bring your inbox to zero.');
-                        session.send('Emails that need following up from someone else are moved to the wait folder. I check my action folder once a day and my wait twice a week');
+
+                        session.send('Start going through your inbox and move action items to the action folder and all other mail to archive');
+                        session.sendTyping();
 
                         setTimeout(function () {
-                            builder.Prompts.confirm(session, 'This method has helped me a lot since I started working with it about eight years ago. Now I never lose track of actionable emails and I am not being distracted by all the clutter. Get it?');
-                        }, 1250);
+                            session.send('Step 4...');
+                            session.sendTyping();
 
-                    }, 1550);
+                            setTimeout(function () {
+                                 session.send('Set times in your agenda to work on your action folder and to bring your inbox to zero.');
+                                 session.sendTyping();
 
-                }, 1750);
-            }, 2000);
-        }, 2500);
-    },
+                                setTimeout(function () {    
+                                session.send('Emails that need following up from someone else are moved to the wait folder. I check my action folder once a day and my wait twice a week');
+                                    session.sendTyping();
+
+                                    setTimeout(function () {    
+                                        session.send('This method has helped me a lot since I started working with it about eight years ago. Now I never lose track of actionable emails and I am not being distracted by all the clutter. ');
+                                        session.sendTyping();
+
+                                        setTimeout(function () {
+                                            builder.Prompts.confirm(session, 'Get it?');
+                                        }, 1000);
+                                 
+                                    }, 3000);
+
+                                  }, 1000);
+
+                            }, 2500);
+
+                        }, 2500);
+
+                   }, 2500);
+
+                }, 3000);
+
+           }, 3000);
+
+        }, 1000);
+  
+},
     (session, args, next) => {
         if (args.response == true) {
             session.endDialog('Nice, I wonder how it works for you! Let me know if you want to discuss something else.')
@@ -488,6 +516,9 @@ bot.dialog('/inboxzero', [
 ]);
 
 bot.dialog('/ai', [
+    (session, args, next) => {
+        builder.Prompts.confirm(session, 'Lol, no...wait, check this out');
+    },
     (session, args, next) => {
         const card = new builder.VideoCard(session)
             .title('The animated guide to artificial intelligence')
