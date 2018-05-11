@@ -205,8 +205,8 @@ bot.dialog('/joke', (session) => {
     
     session.sendTyping();
     setTimeout(function () {
-    session.endDialog('Ok, my sense of humor needs some more coding')
-}, 3000);
+    session.endDialog('Ok, my sense of humor needs some more coding');
+}, 2000);
                                  
 }, 5000);
 
