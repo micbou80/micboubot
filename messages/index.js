@@ -100,7 +100,7 @@ const qna_recognizer = new builder_cognitiveservices.QnAMakerRecognizer({
 
 bot.recognizer(qna_recognizer);
 
-//@TODO Overrule LUIS bij Modern Workplace (Experience > MSFT > MW)
+
 //@TODO Add Project Peronality Chat
 //@TODO Cognitive services toevoegen
 
@@ -226,11 +226,9 @@ bot.dialog('/joke', (session) => {
     session.sendTyping();
     setTimeout(function () {
     session.endDialog('Ok, my sense of humor needs some more coding')
-}, 1000);
-                                 
 }, 3000);
-
-
+                                 
+}, 5000);
 
 }).triggerAction({
     matches: ['Joke']
@@ -274,11 +272,29 @@ bot.dialog('/help', (session) => {
 // Experience Waterfall
 bot.dialog('/experience', [
     (session, args, next) => {
-        builder.Prompts.choice(session, 'I have been working for the Dutch subsidiary of Microsoft since 2013. Before my role at Microsoft I have had sales- and people management roles at Misco Nederland (part of Systemax Ltd.), European Directories and T-Mobile Business. In short; 18 years of work experience of which 12 years in management.', [
-            'What do you do at Microsoft?',
-            'I would like to get in touch with you.'
-        ], { listStyle: builder.ListStyle.button, maxRetries: 2 });
-    },
+        session.sendTyping();
+        setTimeout(function () {
+        session.send('I have been working for the Dutch subsidiary of Microsoft since 2013. ');
+      
+            session.sendTyping();
+            setTimeout(function () {
+            session.send('Before my role at Microsoft I have had sales- and people management roles');
+
+                session.sendTyping();
+                setTimeout(function () {
+                builder.Prompts.choice(session, 'In short; 18 years of work experience of which 12 years in sales-/people management.', [
+                'What do you do at Microsoft?',
+                'Where did you work before Microsoft?',
+                'I would like to get in touch with you.'
+                ], { listStyle: builder.ListStyle.button, maxRetries: 2 });
+            }, 2500);
+        }, 2500);
+    }, 2500);
+        
+},
+
+                                 
+
     (session, args, next) => {
         if (args.response.index !== undefined) {
             switch (args.response.index) {
@@ -286,13 +302,35 @@ bot.dialog('/experience', [
                     session.beginDialog('/msft');
                     break;
                 case 1:
-                    session.beginDialog('/contact');
+                    session.beginDialog('/LinkedIN');
+                    break;
+                case 2:
+                    session.beginDialog('contact');
                     break;
                 default:
                     session.endDialog('Please select one of the options');
             }
         }
 
+    }
+]);
+
+bot.dialog('/LinkedIN', [
+    (session, args, next) => {
+        const card = new builder.HeroCard(session)
+            .title('Michel Bouman at LinkedIN')
+            .subtitle('(View on Microsoft Pulse blogsite)')
+            .text('You can find my full profile on LinkedIN.')
+            .images([
+                builder.CardImage.create(session, 'http://www.michelbouman.nl/inboxzeroblog.png')
+            ])
+            .buttons([
+                builder.CardAction.openUrl(session, 'https://www.linkedin.com/in/michelbouman/', 'Check out full profile')
+            ]);
+
+        const msg = new builder.Message(session).addAttachment(card);
+
+        session.endDialog(msg);
     }
 ]);
 
@@ -311,10 +349,10 @@ bot.dialog('/msft', [
                     session.beginDialog('/ai');
                     break;
                 case 1:
-                    session.beginDialog('/contact');
+                    session.beginDialog('/modernworkplace');
                     break;
                 case 2:
-                    session.beginDialog('/modernworkplace');
+                    session.beginDialog('/contact');
                     break;
                 default:
                     session.endDialog('Please select one of the options');
@@ -330,6 +368,7 @@ bot.dialog('/ai', [
     setTimeout(function () {
         session.send("Haha, no...wait, check this out.");
     }, 1500);
+    next();
     },
     (session, args, next) => {
         const card = new builder.VideoCard(session)
