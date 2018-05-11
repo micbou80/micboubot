@@ -336,12 +336,38 @@ bot.dialog('/LinkedIN', [
 
 bot.dialog('/msft', [
     (session, args, next) => {
-        builder.Prompts.choice(session, 'As a Territory Channel Manager my role sits right in between our customers and our partners. My focus is on the Modern Workplace and on Artificial Intelligence', [
-            'A.I. from the Sci-fi movies?',
-            'Whats a modern place?',
-            'I would like to get in touch with you.'
-        ], { listStyle: builder.ListStyle.button, maxRetries: 2 });
-    },
+        session.sendTyping();
+        setTimeout(function () {
+        session.send('I am Territory Channel Manager.');
+        
+            session.sendTyping();
+            setTimeout(function () {
+                session.send('The role sits right in between our customers and our partners...');
+
+                    session.sendTyping();
+                setTimeout(function () {
+                    session.send('Basically, I connect partner solutions on Microsoft technology to customer needs...');
+
+                    session.sendTyping();
+                    setTimeout(function () {
+                        session.send('My focus is on the Modern Workplace and on Artificial Intelligence.');
+
+                    builder.Prompts.choice(session, '', [
+                        'A.I. from the Sci-fi movies?',
+                        'Whats a modern workplace?',
+                        'I would like to get in touch with you.'
+                    ], { listStyle: builder.ListStyle.button, maxRetries: 2 });
+
+                    }, 2500);
+        }, 2500);
+    }, 2500);
+}, 2500);
+        
+},
+
+
+
+
     (session, args, next) => {
         if (args.response.index !== undefined) {
             switch (args.response.index) {
@@ -397,7 +423,7 @@ bot.dialog('/modernworkplace', [
     (session, args, next) => {
         session.sendTyping();
     setTimeout(function () {
-        session.send("To me, the modern workplace is a workplace that empowers everyone to be creative and work together, securely. Check out this demo ");
+        session.send("To me, its a workplace that empowers everyone to be creative and work together, securely. Check out this vid.");
     }, 1500);
     next();
     },
