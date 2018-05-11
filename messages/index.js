@@ -155,44 +155,24 @@ bot.on('conversationUpdate', (message) => {
 });
 
 bot.dialog('/name', [
-    (session, args, next) => {
-        builder.Prompts.text(session, "Ok, but first whats your name or what may I call you?");
-    },
-    (session, args, next) => {
-        if (args.response) {
-            session.userData.name = args.response;
-            session.endDialog('Welcome to the site %s. Lets chat!', session.userData.name);
-        } else {
-            next();
-        }
-    }
-]);
 
-// Default Dialog
-bot.dialog('/', [
     (session, args, next) => {
-        if (session.userData.name !== undefined) {
-            session.send('Hey wait a minute. I recognize you, %s right? I am excited to see you back here', session.userData.name);
-            next();
-        }
-        
-    },
-    (session, args, next) => {
-        if (args.response !== undefined) {
-            session.userData.name = args.response;
-            session.send('Welcome to the site %s. Lets chat', session.userData.name);
-            next();
-        }
-        
-        
 
+        session.sendTyping();
+    setTimeout(function () {
+        session.send('Cool! Lets do it...');
+    },2000)
+
+    session.sendTyping();
+    setTimeout(function () {
         builder.Prompts.choice(session, 'What would you like to talk about?', [
             'Tell me about your work experience',
             'Lets play a game (under construction)',
             'Any productivity tips?',
             'I want to get in touch with you'
         ], { listStyle: builder.ListStyle.button, maxRetries: 2 });
-    },
+    },2000)
+},
     (session, args, next) => {
         if (args.response.index !== undefined) {
             switch (args.response.index) {
@@ -340,9 +320,7 @@ bot.dialog('/msft', [
         setTimeout(function () {
         session.send('I am Territory Channel Manager.');
         
-            session.sendTyping();
-            setTimeout(function () {
-                session.send('The role sits right in between our customers and our partners...');
+         
 
                     session.sendTyping();
                 setTimeout(function () {
@@ -359,7 +337,7 @@ bot.dialog('/msft', [
                     ], { listStyle: builder.ListStyle.button, maxRetries: 2 });
 
                     }, 2500);
-        }, 2500);
+        
     }, 2500);
 }, 2500);
         
