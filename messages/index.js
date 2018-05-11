@@ -446,10 +446,7 @@ bot.dialog('/modernworkplace', [
     }
 ]);
 
-// Cognitive Services Game
-bot.dialog('/game', (session) => {
-    session.endDialog('This part is under construction, but soon I will be showing of my cognitive skills');
-}).triggerAction({ matches: 'Game' });
+
 
 // Productivity Waterfall
 
@@ -696,11 +693,44 @@ bot.dialog('/15min', [
     }
 ]);
 
+// Cognitive Services Game
+bot.dialog('/game', (session) => {
+
+    session.sendTyping();
+    setTimeout(function () {
+    session.send('Lets start by you uploading a picture');
+
+    session.sendTyping();
+    setTimeout(function () {
+    session.send('Than I will guess what you have uploaded');
+
+    session.sendTyping();
+    setTimeout(function () {
+    session.endDialog('and no worries, I am not saving your picture')
+
+    session.sendTyping();
+    setTimeout(function () {
+    session.send('Im at work, so keep it clean');
+
+    session.sendTyping();
+    setTimeout(function () {
+    session.send('You can upload by clicking the bottom left picture')
+
+    
+
+    }, 2500);
+    }, 2500);
+    }, 2500);
+    }, 2500);
+    }, 2500);
+
+}).triggerAction({ matches: 'Game' });
+
 bot.dialog('/image-received', [
     (session, args, next) => {
         const attachment = args.attachment;
         console.log(attachment);
 
-        session.endDialog('(not yet implemented)');
+        session.endDialog('This part is under construction, but soon I will be showing of my cognitive skills');
     }
 ]);
