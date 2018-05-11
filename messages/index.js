@@ -352,7 +352,7 @@ bot.dialog('/msft', [
                     setTimeout(function () {
                         session.send('My focus is on the Modern Workplace and on Artificial Intelligence.');
 
-                    builder.Prompts.choice(session, '', [
+                    builder.Prompts.choice(session, 'so', [
                         'A.I. from the Sci-fi movies?',
                         'Whats a modern workplace?',
                         'I would like to get in touch with you.'
