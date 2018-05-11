@@ -172,19 +172,20 @@ bot.dialog('/name', [
 bot.dialog('/', [
     (session, args, next) => {
         if (session.userData.name !== undefined) {
-            session.send('Hey wait a minute. I recognize you! %s, right? Great to have you back', session.userData.name);
+            session.send('Hey wait a minute. I recognize you, %s right? I am excited to see you back here', session.userData.name);
             next();
         }
-        next();
+        
     },
     (session, args, next) => {
         if (args.response !== undefined) {
             session.userData.name = args.response;
-            session.send('Welcome to the site %s.', session.userData.name);
+            session.send('Welcome to the site %s. Lets chat', session.userData.name);
             next();
         }
         
-        next();
+        
+
         builder.Prompts.choice(session, 'What would you like to talk about?', [
             'Tell me about your work experience',
             'Lets play a game (under construction)',
