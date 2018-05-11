@@ -370,6 +370,8 @@ bot.dialog('/ai', [
     }, 1500);
     next();
     },
+
+    
     (session, args, next) => {
         const card = new builder.VideoCard(session)
             .title('The animated guide to artificial intelligence')
@@ -392,6 +394,13 @@ bot.dialog('/ai', [
 
 
 bot.dialog('/modernworkplace', [
+    (session, args, next) => {
+        session.sendTyping();
+    setTimeout(function () {
+        session.send("To me, the modern workplace is a workplace that empowers everyone to be creative and work together, securely. Check out this demo ");
+    }, 1500);
+    next();
+    },
     (session, args, next) => {
         const card = new builder.VideoCard(session)
             .title('Modern Workplace')
