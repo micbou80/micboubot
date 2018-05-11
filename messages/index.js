@@ -146,9 +146,9 @@ bot.on('conversationUpdate', (message) => {
 
                         setTimeout(() => {
                             bot.send(welcomeMessage3);
-                        }, 2000)
-                    }, 2000)
-                }, 2000)
+                        }, 3000)
+                    }, 3000)
+                }, 3000)
             }
         });
     }
