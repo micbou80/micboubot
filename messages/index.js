@@ -219,7 +219,19 @@ bot.dialog('/', [
 
 // Joke Dialog (LUIS)
 bot.dialog('/joke', (session) => {
-    session.endDialog('My dog used to chase people on a bike a lot. It got so bad, finally I had to take his bike away. (....) ahum, I know.. my humors need development.');
+    session.sendTyping();
+    setTimeout(function () {
+    session.send('My dog used to chase people on a bike a lot. It got so bad, finally I had to take his bike away. ');
+    
+    session.sendTyping();
+    setTimeout(function () {
+    session.endDialog('Ok, my sense of humor needs some more coding')
+}, 1000);
+                                 
+}, 3000);
+
+
+
 }).triggerAction({
     matches: ['Joke']
 });
@@ -256,13 +268,10 @@ bot.dialog('/help', (session) => {
     session.endDialog('You can ask me about work, productivity, getting in touch and I am learning new small talk all the time');
 }).triggerAction({ matches: 'Help' });
 
-// Cognitive Services Game
-bot.dialog('/game', (session) => {
-    session.endDialog('This part is under construction, but soon I will be showing of my cognitive skills');
-}).triggerAction({ matches: 'Game' });
 
 
 
+// Experience Waterfall
 bot.dialog('/experience', [
     (session, args, next) => {
         builder.Prompts.choice(session, 'I have been working for the Dutch subsidiary of Microsoft since 2013. Before my role at Microsoft I have had sales- and people management roles at Misco Nederland (part of Systemax Ltd.), European Directories and T-Mobile Business. In short; 18 years of work experience of which 12 years in management.', [
@@ -286,6 +295,89 @@ bot.dialog('/experience', [
 
     }
 ]);
+
+bot.dialog('/msft', [
+    (session, args, next) => {
+        builder.Prompts.choice(session, 'As a Territory Channel Manager my role sits right in between our customers and our partners. My focus is on the Modern Workplace and on Artificial Intelligence', [
+            'A.I. from the Sci-fi movies?',
+            'Whats a modern place?',
+            'I would like to get in touch with you.'
+        ], { listStyle: builder.ListStyle.button, maxRetries: 2 });
+    },
+    (session, args, next) => {
+        if (args.response.index !== undefined) {
+            switch (args.response.index) {
+                case 0:
+                    session.beginDialog('/ai');
+                    break;
+                case 1:
+                    session.beginDialog('/contact');
+                    break;
+                case 2:
+                    session.beginDialog('/modernworkplace');
+                    break;
+                default:
+                    session.endDialog('Please select one of the options');
+            }
+        }
+
+    }
+]).triggerAction({ matches: 'Work' });
+
+bot.dialog('/ai', [
+    (session, args, next) => {
+        session.sendTyping();
+    setTimeout(function () {
+        session.send("Haha, no...wait, check this out.");
+    }, 1500);
+    },
+    (session, args, next) => {
+        const card = new builder.VideoCard(session)
+            .title('The animated guide to artificial intelligence')
+            .subtitle('(Explanimators: Episode 1)')
+            .text('Watch this easy guide to everything AI. Its from Microsoft Story Labs...')
+            .image(builder.CardImage.create(session, 'https://www.coolermedia.nl/wp-content/uploads/2017/08/4nsilupnry0.jpg'))
+            .media([
+                { url: 'https://www.youtube.com/watch?v=4NsilUpnRY0&t=2s?autoplay=1' }
+            ])
+            .buttons([
+                builder.CardAction.openUrl(session, 'https://www.microsoft.com/en-us/ai/', 'Learn More')
+            ]);
+
+        const msg = new builder.Message(session).addAttachment(card);
+
+        session.endDialog(msg);
+    }
+]);
+
+
+
+bot.dialog('/modernworkplace', [
+    (session, args, next) => {
+        const card = new builder.VideoCard(session)
+            .title('Modern Workplace')
+            .subtitle('(Explanimators: Episode 1)')
+            .text('To me, the modern workplace is a workplace that empowers everyone to be creative and work together, securely. So being able to get more done, work better together while safeguarding your data')
+            .image(builder.CardImage.create(session, 'https://www.coolermedia.nl/wp-content/uploads/2017/08/4nsilupnry0.jpg'))
+            .media([
+                { url: 'https://www.youtube.com/watch?v=rW-r86Yj1W4' }
+            ])
+            .buttons([
+                builder.CardAction.openUrl(session, 'https://resources.office.com/en-us-landing-DemoIntroducingMicrosoft365Business.html', 'Check out the demo')
+            ]);
+
+        const msg = new builder.Message(session).addAttachment(card);
+
+        session.endDialog(msg);
+    }
+]);
+
+// Cognitive Services Game
+bot.dialog('/game', (session) => {
+    session.endDialog('This part is under construction, but soon I will be showing of my cognitive skills');
+}).triggerAction({ matches: 'Game' });
+
+// Productivity Waterfall
 
 bot.dialog('/work-smarter', [
     (session, args, next) => {
@@ -316,104 +408,8 @@ bot.dialog('/work-smarter', [
     }
 ]).triggerAction({ matches: 'Productivity' });
 
-bot.dialog('/contact', [
-    (session, args, next) => {
 
-        let message = 'I would love to hear from you. You can reach me by e-mail or book 15 minutes in my calendar. Which one do you prefer?';
-        if (session.userData.name !== undefined) {
-            message = 'I would love to hear from you, ' + session.userData.name + '. You can reach me by e-mail or book 15 minutes in my calendar. Which one do you prefer?'
-        }
 
-        builder.Prompts.choice(session, message, [
-            'Email',
-            'Schedule 15 minutes'
-        ], { listStyle: builder.ListStyle.button, maxRetries: 2 });
-    },
-    (session, args, next) => {
-        if (args.response.entity == 'Schedule 15 minutes') {
-            session.replaceDialog('/15min');
-            return;
-        }
-        builder.Prompts.text(session, 'Let me take care of that. What is your e-mail address?')
-    },
-    (session, args, next) => {
-        if (args.response) {
-            session.dialogData.email = args.response;
-            builder.Prompts.text(session, 'Got it. So what message would you like to send (no pagebreaks needed).');
-        }
-    },
-    (session, args, next) => {
-        if (args.response) {
-            session.dialogData.text = args.response;
-
-            const nodemailer = require('nodemailer');
-            const smtpTransport = require('nodemailer-smtp-transport');
-
-            let transporter = nodemailer.createTransport(smtpTransport({
-                host: 'mail.michelbouman.nl',
-                port: 587,
-                secure: false, // use TLS
-                auth: {
-                    user: 'bot@michelbouman.nl',
-                    pass: process.env.EmailPassword
-                },
-                tls: {
-                    rejectUnauthorized: false // do not fail on invalid certs
-                }
-            }));
-
-            transporter.verify((error, success) => {
-                if (error) {
-                    session.error(error);
-                }
-            });
-
-            const mailOptions = {
-                from: session.dialogData.email, // sender address
-                to: 'bot@michelbouman.nl', // list of receivers
-                subject: 'Bot Mail', // Subject line
-                text: session.dialogData.text
-            };
-
-            transporter.sendMail(mailOptions, (error, info) => {
-                if (error) {
-                    session.error(error);
-                } else {
-                    session.endDialog('Thanks' + session.userData.name + ', your message was sent to my inbox and I will reply as soon as possible. Let me know if you want to chat about something else.');
-                };
-            });
-        }
-
-    }
-]).triggerAction({ matches: 'Contact' });
-
-bot.dialog('/msft', [
-    (session, args, next) => {
-        builder.Prompts.choice(session, 'As a Territory Channel Manager my role sits right in between our customers and our partners. My focus is on the Modern Workplace and on Artificial Intelligence', [
-            'A.I. from the Sci-fi movies?',
-            'Whats a modern place?',
-            'I would like to get in touch with you.'
-        ], { listStyle: builder.ListStyle.button, maxRetries: 2 });
-    },
-    (session, args, next) => {
-        if (args.response.index !== undefined) {
-            switch (args.response.index) {
-                case 0:
-                    session.beginDialog('/ai');
-                    break;
-                case 1:
-                    session.beginDialog('/contact');
-                    break;
-                case 2:
-                    session.beginDialog('/modernworkplace');
-                    break;
-                default:
-                    session.endDialog('Please select one of the options');
-            }
-        }
-
-    }
-]).triggerAction({ matches: 'Work' });
 
 bot.dialog('/calendarhelp', [
     (session, args, next) => {
@@ -428,11 +424,7 @@ bot.dialog('/calendarhelp', [
     }
 ]);
 
-bot.dialog('/later', [
-    (session) => {
-        session.endDialog('Ok. Talk to you soon.');
-    }
-]);
+
 
 bot.dialog('/frogs', [
     (session, args, next) => {
@@ -537,50 +529,79 @@ bot.dialog('/0blog', [
     }
 ]);
 
-bot.dialog('/ai', [
+// Contact Waterfall
+
+bot.dialog('/contact', [
     (session, args, next) => {
-        builder.Prompts.confirm(session, 'Lol, no...wait, check this out');
+
+        let message = 'I would love to hear from you. You can reach me by e-mail or book 15 minutes in my calendar. Which one do you prefer?';
+        if (session.userData.name !== undefined) {
+            message = 'I would love to hear from you, ' + session.userData.name + '. You can reach me by e-mail or book 15 minutes in my calendar. Which one do you prefer?'
+        }
+
+        builder.Prompts.choice(session, message, [
+            'Email',
+            'Schedule 15 minutes'
+        ], { listStyle: builder.ListStyle.button, maxRetries: 2 });
     },
     (session, args, next) => {
-        const card = new builder.VideoCard(session)
-            .title('The animated guide to artificial intelligence')
-            .subtitle('(Explanimators: Episode 1)')
-            .text('Watch this easy guide to everything AI. Its from Microsoft Story Labs...')
-            .image(builder.CardImage.create(session, 'https://www.coolermedia.nl/wp-content/uploads/2017/08/4nsilupnry0.jpg'))
-            .media([
-                { url: 'https://www.youtube.com/watch?v=4NsilUpnRY0&t=2s?autoplay=1' }
-            ])
-            .buttons([
-                builder.CardAction.openUrl(session, 'https://www.microsoft.com/en-us/ai/', 'Learn More')
-            ]);
-
-        const msg = new builder.Message(session).addAttachment(card);
-
-        session.endDialog(msg);
-    }
-]);
-
-
-
-bot.dialog('/modernworkplace', [
+        if (args.response.entity == 'Schedule 15 minutes') {
+            session.replaceDialog('/15min');
+            return;
+        }
+        builder.Prompts.text(session, 'Let me take care of that. What is your e-mail address?')
+    },
     (session, args, next) => {
-        const card = new builder.VideoCard(session)
-            .title('Modern Workplace')
-            .subtitle('(Explanimators: Episode 1)')
-            .text('To me, the modern workplace is a workplace that empowers everyone to be creative and work together, securely. So being able to get more done, work better together while safeguarding your data')
-            .image(builder.CardImage.create(session, 'https://www.coolermedia.nl/wp-content/uploads/2017/08/4nsilupnry0.jpg'))
-            .media([
-                { url: 'https://www.youtube.com/watch?v=rW-r86Yj1W4' }
-            ])
-            .buttons([
-                builder.CardAction.openUrl(session, 'https://resources.office.com/en-us-landing-DemoIntroducingMicrosoft365Business.html', 'Check out the demo')
-            ]);
+        if (args.response) {
+            session.dialogData.email = args.response;
+            builder.Prompts.text(session, 'Got it. So what message would you like to send (no pagebreaks needed).');
+        }
+    },
+    (session, args, next) => {
+        if (args.response) {
+            session.dialogData.text = args.response;
 
-        const msg = new builder.Message(session).addAttachment(card);
+            const nodemailer = require('nodemailer');
+            const smtpTransport = require('nodemailer-smtp-transport');
 
-        session.endDialog(msg);
+            let transporter = nodemailer.createTransport(smtpTransport({
+                host: 'mail.michelbouman.nl',
+                port: 587,
+                secure: false, // use TLS
+                auth: {
+                    user: 'bot@michelbouman.nl',
+                    pass: process.env.EmailPassword
+                },
+                tls: {
+                    rejectUnauthorized: false // do not fail on invalid certs
+                }
+            }));
+
+            transporter.verify((error, success) => {
+                if (error) {
+                    session.error(error);
+                }
+            });
+
+            const mailOptions = {
+                from: session.dialogData.email, // sender address
+                to: 'bot@michelbouman.nl', // list of receivers
+                subject: 'Bot Mail', // Subject line
+                text: session.dialogData.text
+            };
+
+            transporter.sendMail(mailOptions, (error, info) => {
+                if (error) {
+                    session.error(error);
+                } else {
+                    session.endDialog('Thanks' + session.userData.name + ', your message was sent to my inbox and I will reply as soon as possible. Let me know if you want to chat about something else.');
+                };
+            });
+        }
+
     }
-]);
+]).triggerAction({ matches: 'Contact' });
+
 
 bot.dialog('/15min', [
     (session, args, next) => {
